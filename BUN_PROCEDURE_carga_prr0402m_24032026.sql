@@ -4,7 +4,7 @@ create or replace procedure pr.carga_prr0402m (
    p_error       out varchar2
 ) is
 --
--- Procedimiento Wrapper para cargar informacion crediticia de múltiples empresas
+-- Procedimiento Wrapper/Envolvente para cargar informacion crediticia de múltiples empresas
 -- Fecha de creación : 24/03/2026
 -- Objetivo          : Insertar en la tabla PR_ANTEC_CRED_GTT los registros
 --                     para múltiples códigos de empresa por cliente
@@ -20,11 +20,16 @@ BEGIN
         from pa.empresa e
        where instr(v_ant_cred, '|' || e.cod_empresa || '|') > 0
    ) loop
+      -- [25/03/2026] Se pasa p_commit=>FALSE para evitar COMMITs intermedios entre empresas.
+      --              La GTT es ON COMMIT PRESERVE ROWS, por lo que un COMMIT intermedio no
+      --              vacia los datos; sin embargo, se centraliza el COMMIT en el wrapper
+      --              para un correcto manejo transaccional de la carga multi-empresa.
       pr.carga_prr0402g(
          reg.cod_empresa,
          p_cod_cliente,
          p_fecha_hoy,
-         p_error
+         p_error,
+         p_commit => FALSE
       );
       if p_error is not null then
          p_error := 'Error en carga_prr0402g para empresa '
@@ -34,6 +39,8 @@ BEGIN
          return;
       end if;
    end loop;
+   -- [25/03/2026] COMMIT unico al finalizar todas las empresas.
+   COMMIT;
 exception
    when others then
       p_error := 'Error no controlado en carga_prr0402m: ' || sqlerrm;
