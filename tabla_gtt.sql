@@ -15,7 +15,7 @@ CREATE GLOBAL TEMPORARY TABLE PR.PR_ANTEC_CRED_GTT
     COD_EMPRESA               VARCHAR2 (5 BYTE) NOT NULL,
     TIPO_REGISTRO             VARCHAR2 (3 BYTE) NOT NULL,
     NUM_TRAMITE               NUMBER (10),
-    NO_OPERACION              NUMBER (16),
+    NO_OPERACION              VARCHAR2 (20),
     COD_OPERACION             VARCHAR2 (15 BYTE),
     DES_MONEDA                VARCHAR2 (4 BYTE),
     FEC_INICIO                DATE,

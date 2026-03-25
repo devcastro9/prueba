@@ -253,7 +253,7 @@ BEGIN
          Pr_Abon3_Bd.Datos_Generales_Tramite ( p_cod_empresa,
                                                r_op_bl.num_tramite,
                                                p_fecha_hoy,
-                                               v_no_credito,
+                                               v_no_credito,--no_operacion en tabla gtt
                                                v_tasa_interes,
                                                v_dias_plazo,
                                                v_fec_inicio,
@@ -418,7 +418,7 @@ BEGIN
       Pr_Abon3_Bd.Datos_Generales_Tramite ( p_cod_empresa,
                                             r_op_fl.num_tramite,
                                             p_fecha_hoy,
-                                            v_no_credito,
+                                            v_no_credito,--no_operacion en tabla gtt
                                             v_tasa_interes,
                                             v_dias_plazo,
                                             v_fec_inicio,
@@ -590,7 +590,7 @@ BEGIN
       Pr_Abon3_Bd.Datos_Generales_Tramite ( p_cod_empresa,
                                             r_op_ind.num_tramite,
                                             p_fecha_hoy,
-                                            v_no_credito,
+                                            v_no_credito,--no_operacion en tabla gtt
                                             v_tasa_interes,
                                             v_dias_plazo,
                                             v_fec_inicio,
