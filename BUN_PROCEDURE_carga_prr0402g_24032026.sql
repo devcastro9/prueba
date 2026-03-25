@@ -1,13 +1,10 @@
-CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
+CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( --p_sesion IN VARCHAR2,
                                                 p_cod_empresa     IN VARCHAR2,
                                                 p_cod_cliente     IN VARCHAR2,
-                                                p_linea           IN VARCHAR2,
-                                                p_nom_cliente     IN VARCHAR2,
-                                                p_cod_moneda_usd  IN VARCHAR2,
                                                 p_fecha_hoy       IN DATE,
                                                 p_error           OUT VARCHAR2) IS
 --
--- Fecha de creación : 14/02/2001
+-- Fecha de creaciï¿½n : 14/02/2001
 -- Analista          : Gustavo Anzoategui
 -- Fecha de modific. : 13/11/2002
 -- Analista          : Luis De la Quintana
@@ -17,12 +14,21 @@ CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
 -- Fecha de modific. : 13/04/2004
 -- Analista          : Luis De la Quintana
 -- Fecha de Modific. : 29/06/2005
--- Analista          : José luis Durán S.
--- Objetivo:De las deudas indirectas, ya no sale el instrumento sino más bien el nombre del cliente
+-- Analista          : Josï¿½ luis Durï¿½n S.
+-- Objetivo:De las deudas indirectas, ya no sale el instrumento sino mï¿½s bien el nombre del cliente
 --
 -- Fecha de Modific. : 11/05/2017
--- Analista          : Noé Quenta Chavez.
--- Objetivo          :Convertir el monto desembolsado de todas las operaciones a dólares
+-- Analista          : Noï¿½ Quenta Chavez.
+-- Objetivo          :Convertir el monto desembolsado de todas las operaciones a dï¿½lares
+--
+-- Fecha de Modific. : 24/03/2026
+-- Objetivo          : Optimizacion de rendimiento:
+--                     1. cur_plan reemplazado por SELECT pivot con ROW_NUMBER analitico,
+--                        eliminando el loop PL/SQL fila-por-fila y la subconsulta
+--                        correlacionada (MAX no_cuota - N) en BL y FL.
+--                     2. Cursor v_cur_op_ind ampliado con JOIN a nombre del titular,
+--                        eliminando el SELECT individual por cada operacion indirecta.
+--                     3. La tabla PR_OPERACIONES_TMP es reemplazada por una GTT: pr.PR_ANTEC_CRED_GTT
 -----------------------------------------------------------------------------------
    v_des_moneda            moneda.descripcion%TYPE;
    v_abrev_moneda          moneda.abreviatura%TYPE;
@@ -54,8 +60,8 @@ CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
    v_saldo_directo     NUMBER(16,2);
    v_saldo_dir_USD     NUMBER(16,2);
    v_monto_operacion   NUMBER(16,2);
-   v_MontoOp_USD       NUMBER(16,2);  --variable para obtener el monto desembolsado de lineas de credito en dólares
-   v_MontoDes_USD       NUMBER(16,2);  --variable para obtener el monto desembolsado de operaciones bajo linea en dólares
+   v_MontoOp_USD       NUMBER(16,2);  --variable para obtener el monto desembolsado de lineas de credito en dï¿½lares
+   v_MontoDes_USD       NUMBER(16,2);  --variable para obtener el monto desembolsado de operaciones bajo linea en dï¿½lares
    v_intereses_ope     NUMBER(16,2);
    v_comision          NUMBER(16,2);
    v_cargos            NUMBER(16,2);
@@ -64,6 +70,9 @@ CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
    v_poliza            NUMBER(16,2);
    v_mensaje_error     VARCHAR2(10);
    v_fec_inicio        DATE;
+   v_linea             PA.PARAM_GENERALES.ABREV_PARAMETRO%TYPE;  -- COD_OPER_LINEAS_CR
+   v_cod_moneda_usd    PA.PARAM_GENERALES.ABREV_PARAMETRO%TYPE;  -- COD_MONEDA_DOLAR
+   v_nom_cliente        varchar2(100);
    -- Variables utilizadas en la prevision anterior
    v_cod_estado_anterior  VARCHAR2(2);
    v_prev_cont_anterior   NUMBER(16,2);
@@ -144,6 +153,8 @@ CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
   --
   -- Cursor de Operaciones Indirectas del cliente
   --
+  -- [TRAZABILIDAD] Cursor original sin nombre titular (requeria SELECT por fila en el loop):
+  /*
   CURSOR v_cur_op_ind IS
   SELECT a.num_tramite, b.fec_inicio, b.mon_operacion, b.codigo_estado, b.cod_moneda,
          b.cod_tip_operacion, b.cod_tip_producto, b.cod_tip_credito
@@ -154,9 +165,28 @@ CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
      AND a.cod_empresa = b.cod_empresa
      AND a.num_tramite = b.num_tramite
      AND (b.codigo_estado IN (Pr_Utl_Estados.verif_estado_act_cast (b.codigo_estado))
-      OR b.codigo_estado IN ('P'));--(Pr_Utl_Estados.Verif_Estado_linea(b.codigo_estado)));
+      OR b.codigo_estado IN ('P'));
+  */
+  -- [OPTIMIZADO 24/03/2026] JOIN directo a nombre titular: elimina SELECT individual
+  --   por cada operacion indirecta en el loop.
+  CURSOR v_cur_op_ind IS
+  SELECT a.num_tramite, b.fec_inicio, b.mon_operacion, b.codigo_estado, b.cod_moneda,
+         b.cod_tip_operacion, b.cod_tip_producto, b.cod_tip_credito,
+         SUBSTR(p.nombre, 1, 60) nombre_titular
+    FROM pr_v_garantes        a
+    JOIN PR_TRAMITE            b  ON  b.cod_empresa = a.cod_empresa
+                                  AND b.num_tramite = a.num_tramite
+    JOIN PERSONAS_X_PR_TRAMITE px ON  px.cod_empresa = a.cod_empresa
+                                  AND px.num_tramite  = a.num_tramite
+                                  AND px.ind_titular  = 'S'
+    JOIN personas              p  ON  p.cod_persona   = px.cod_persona
+   WHERE a.cod_empresa    = p_cod_empresa
+     AND a.quirografaria  = 'N'
+     AND a.cod_cliente    = p_cod_cliente
+     AND (b.codigo_estado IN (Pr_Utl_Estados.verif_estado_act_cast (b.codigo_estado))
+       OR b.codigo_estado IN ('P'));
    --
-   CURSOR cur_plan ( pc_cod_empresa IN VARCHAR2,
+   /*CURSOR cur_plan ( pc_cod_empresa IN VARCHAR2,
                      pc_no_credito  IN NUMBER  ) IS
       SELECT no_cuota, f_cancelacion, (f_cancelacion - f_cuota) dias_atraso, ROWNUM cant
         FROM PR_PLAN_PAGOS a
@@ -169,12 +199,15 @@ CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
                               WHERE a.no_credito     = b.no_credito
                                 AND a.codigo_empresa = b.codigo_empresa
                                 AND a.estado         = b.estado )
-       ORDER BY no_cuota;
+       ORDER BY no_cuota;*/
 BEGIN
-   p_error := NULL;
+   p_error          := NULL;
+   v_linea          := pa.PARAMETRO_GENERAL('PR', 'COD_OPER_LINEAS_CR');
+   v_cod_moneda_usd := pa.PARAMETRO_GENERAL('PR', 'COD_MONEDA_DOLAR');
+   DELETE FROM pr.PR_ANTEC_CRED_GTT WHERE cod_empresa = p_cod_empresa;
    FOR reg_lineas IN v_cur_lineas LOOP
       Valida_Producto_Bd(reg_lineas.tipo_credito,
-                            p_linea,
+                            v_linea,
                             p_cod_empresa   ,
                             v_desc_producto,
                             p_error         );
@@ -218,25 +251,27 @@ BEGIN
                                        v_SaldoAct,
                                        P_Fecha_Hoy,
                                        reg_lineas.Codigo_Moneda,
-                                       P_Cod_Moneda_USD,
+                                       v_cod_moneda_usd,
                                        p_Error,
                                        V_SaldoAct_USD);
       Pr_Utl.Convierte_moneda_a_moneda(P_Cod_Empresa,
                                         v_SaldoDisp,
                                         P_Fecha_Hoy,
                                         reg_lineas.Codigo_Moneda,
-                                        P_Cod_Moneda_USD,
+                                        v_cod_moneda_usd,
                                         p_Error,
                                         V_SaldoDisp_USD);
-      --Convierte a dólares el monto desembolsado
+      --Convierte a dï¿½lares el monto desembolsado
       Pr_Utl.Convierte_moneda_a_moneda(P_Cod_Empresa,
                                         reg_lineas.monto_credito,
                                         P_Fecha_Hoy,
                                         reg_lineas.Codigo_Moneda,
-                                        P_Cod_Moneda_USD,
+                                        v_cod_moneda_usd,
                                         p_Error,
                                         v_MontoOp_USD);
       -- Inserta las Lineas
+      -- [TRAZABILIDAD] INSERT original a PR_OPERACIONES_TMP:
+      /*
       INSERT INTO PR_OPERACIONES_TMP ( sesion               , num_tramite          ,no_credito,
                                        des_moneda           , cod_sucursal         ,fec_primer_desembolso,
                                        mon_saldo            , mon_utilizar         ,f_vencimiento,
@@ -248,6 +283,19 @@ BEGIN
                                        --reg_lineas.monto_credito, v_desc_producto       , v_abrev_estado,
                                        v_MontoOp_USD           , v_desc_producto       , v_abrev_estado,
                                        NULL                    , reg_lineas.f_proxima_revision);
+      */
+      INSERT INTO pr.PR_ANTEC_CRED_GTT (
+                      cod_empresa            , num_tramite              , tipo_registro,
+                      no_credito             , des_moneda               , fec_inicio,
+                      fec_vencimiento        , saldo_directo_usd        , saldo_contingente_usd,
+                      monto_desembolsado_usd , des_producto             , des_estado,
+                      des_instrumento        , nom_cliente              , fec_prox_revision        )
+               VALUES (
+                      p_cod_empresa          , reg_lineas.num_tramite   , 'LIN',
+                      reg_lineas.no_credito  , v_abrev_moneda           , reg_lineas.f_apertura,
+                      reg_lineas.f_vencimiento, v_SaldoAct_USD          , v_SaldoDisp_USD,
+                      v_MontoOp_USD          , v_desc_producto          , v_abrev_estado,
+                      NULL                   , NULL                     , reg_lineas.f_proxima_revision);
         -- Recorre el Cursor de Operaciones Bajo Linea
       FOR r_op_bl IN v_cur_op_bl (p_cod_empresa, reg_lineas.num_tramite) LOOP
          Pr_Abon3_Bd.Datos_Generales_Tramite ( p_cod_empresa,
@@ -311,14 +359,14 @@ BEGIN
                                             v_Saldo_cont,
                                             P_Fecha_Hoy,
                                             r_op_bl.Cod_Moneda,
-                                            P_Cod_Moneda_USD,
+                                            v_cod_moneda_usd,
                                             p_Error,
                                             V_Saldo_cont_USD);
          Pr_Utl.Convierte_moneda_a_moneda ( P_Cod_Empresa,
                                             v_Saldo_directo,
                                             P_Fecha_Hoy,
                                             r_op_bl.Cod_Moneda,
-                                            P_Cod_Moneda_USD,
+                                            v_cod_moneda_usd,
                                             p_Error,
                                             V_Saldo_dir_USD);
          --Convierte el monto desembolsado a dolares
@@ -326,10 +374,10 @@ BEGIN
                                             r_op_bl.mon_operacion,
                                             P_Fecha_Hoy,
                                             r_op_bl.Cod_Moneda,
-                                            P_Cod_Moneda_USD,
+                                            v_cod_moneda_usd,
                                             p_Error,
                                             v_MontoDes_USD);
-         -- Inserta las operaciones bajo linea
+         -- Inserta las operaciones bajo linea  (comentario desplazado, ver INSERT abajo)
          Valida_Instrumento_Credito_Bd ( r_op_bl.cod_tip_credito,
                                          p_cod_empresa,
                                          v_desc_instrumento1,
@@ -371,8 +419,10 @@ BEGIN
                END;
             END IF;
             --
-            -- Busca los 6 últimos pagos y revisa los días de mora
+            -- Busca los 6 ï¿½ltimos pagos y revisa los dï¿½as de mora
             --
+            -- [TRAZABILIDAD] Loop original fila-por-fila sobre cur_plan (con subconsulta correlacionada MAX-3):
+            /*
             FOR reg_plan IN cur_plan ( p_cod_empresa,
                                        TO_NUMBER(v_no_credito))
             LOOP
@@ -384,10 +434,43 @@ BEGIN
                ELSIF reg_plan.cant = 6 THEN vl_cuota1 := reg_plan.dias_atraso;
                END IF;
             END LOOP;
+            */
+            -- [OPTIMIZADO 24/03/2026] Pivot analitico en una sola consulta SQL (BL = 6 cuotas):
+            --   MAX(no_cuota) OVER () reemplaza la subconsulta correlacionada del cur_plan original.
+            BEGIN
+               SELECT MAX(CASE WHEN rn = 1 THEN dias_atraso ELSE 0 END),
+                      MAX(CASE WHEN rn = 2 THEN dias_atraso ELSE 0 END),
+                      MAX(CASE WHEN rn = 3 THEN dias_atraso ELSE 0 END),
+                      MAX(CASE WHEN rn = 4 THEN dias_atraso ELSE 0 END),
+                      MAX(CASE WHEN rn = 5 THEN dias_atraso ELSE 0 END),
+                      MAX(CASE WHEN rn = 6 THEN dias_atraso ELSE 0 END)
+               INTO   vl_cuota6, vl_cuota5, vl_cuota4, vl_cuota3, vl_cuota2, vl_cuota1
+               FROM (
+                  SELECT (f_cancelacion - f_cuota) dias_atraso,
+                         ROW_NUMBER() OVER (ORDER BY no_cuota) rn
+                  FROM (
+                     SELECT f_cancelacion, f_cuota, no_cuota,
+                            MAX(no_cuota) OVER () max_cuota
+                     FROM   PR_PLAN_PAGOS
+                     WHERE  no_credito     = TO_NUMBER(v_no_credito)
+                       AND  estado         = 'C'
+                       AND  no_cuota       > 0
+                       AND  codigo_empresa = p_cod_empresa
+                  )
+                  WHERE no_cuota >= max_cuota - 3
+               );
+            EXCEPTION
+               WHEN NO_DATA_FOUND THEN
+                  vl_cuota6:=0; vl_cuota5:=0; vl_cuota4:=0;
+                  vl_cuota3:=0; vl_cuota2:=0; vl_cuota1:=0;
+            END;
          ELSE
             v_fec_cuota := NULL;
          END IF; --r_op_bl.cod_tip_operacion = 1 THEN
          --
+         -- Inserta las operaciones bajo linea
+         -- [TRAZABILIDAD] INSERT original a PR_OPERACIONES_TMP:
+         /*
          INSERT INTO PR_OPERACIONES_TMP ( sesion            , num_tramite          , cod_persona,
                                           des_moneda        , cod_sucursal         , fec_primer_desembolso,
                                           mon_saldo         , mon_utilizar         , f_vencimiento,
@@ -404,6 +487,26 @@ BEGIN
                                           vl_cuota1            , vl_cuota2                , vl_cuota3,
                                           vl_cuota4            , vl_cuota5                , vl_cuota6,
                                           v_dias_atraso        );
+         */
+         INSERT INTO pr.PR_ANTEC_CRED_GTT (
+                         cod_empresa          , num_tramite               , tipo_registro,
+                         des_moneda           , fec_inicio                , fec_vencimiento,
+                         saldo_directo_usd    , saldo_contingente_usd     , monto_desembolsado_usd,
+                         des_producto         , des_estado                , des_instrumento,
+                         nom_cliente          , num_tramite_padre         , fec_vto_prox_cuota        ,
+                         dias_mora_cuota1     , dias_mora_cuota2          , dias_mora_cuota3,
+                         dias_mora_cuota4     , dias_mora_cuota5          , dias_mora_cuota6,
+                         dias_atraso          )
+                  VALUES (
+                         p_cod_empresa           , r_op_bl.num_tramite      , 'BL',
+                         v_abrev_moneda          , v_fec_inicio             , v_fecha_vencimiento,
+                         v_Saldo_dir_USD         , v_Saldo_cont_USD         , v_MontoDes_USD,
+                         v_desc_producto         , v_abrev_estado           , v_desc_instrumento1,
+                         NULL                    ,
+                         r_op_bl.num_tramite_padre, v_fec_cuota,
+                         vl_cuota1               , vl_cuota2                , vl_cuota3,
+                         vl_cuota4               , vl_cuota5                , vl_cuota6,
+                         v_dias_atraso           );
          --
          vl_cuota6 := 0;
          vl_cuota5 := 0;
@@ -479,7 +582,7 @@ BEGIN
                                          v_Saldo_cont,
                                          P_Fecha_Hoy,
                                          r_op_fl.Cod_Moneda,
-                                         P_Cod_Moneda_USD,
+                                         v_cod_moneda_usd,
                                          p_Error,
                                          V_Saldo_cont_USD);
       --
@@ -487,7 +590,7 @@ BEGIN
                                          v_Saldo_directo,
                                          P_Fecha_Hoy,
                                          r_op_fl.Cod_Moneda,
-                                         P_Cod_Moneda_USD,
+                                         v_cod_moneda_usd,
                                          p_Error,
                                          V_Saldo_dir_USD);
       --
@@ -495,7 +598,7 @@ BEGIN
                                          r_op_fl.mon_operacion,
                                          P_Fecha_Hoy,
                                          r_op_fl.Cod_Moneda,
-                                         P_Cod_Moneda_USD,
+                                         v_cod_moneda_usd,
                                          p_Error,
                                          v_MontoDes_USD);
       --
@@ -539,8 +642,10 @@ BEGIN
             END;
          END IF;
             --
-            -- Busca los 6 últimos pagos y revisa los días de mora
+            -- Busca los 6 ï¿½ltimos pagos y revisa los dï¿½as de mora
             --
+            -- [TRAZABILIDAD] Loop original fila-por-fila sobre cur_plan (con subconsulta correlacionada MAX-3):
+            /*
             FOR reg_plan IN cur_plan ( p_cod_empresa,
                                        TO_NUMBER(v_no_credito))
             LOOP
@@ -550,12 +655,47 @@ BEGIN
                ELSIF reg_plan.cant = 4 THEN vl_cuota1 := reg_plan.dias_atraso; vl_fecha1 := reg_plan.f_cancelacion;
                END IF;
             END LOOP;
+            */
+            -- [OPTIMIZADO 24/03/2026] Pivot analitico en una sola consulta SQL (FL = 4 cuotas + fechas):
+            --   MAX(no_cuota) OVER () reemplaza la subconsulta correlacionada del cur_plan original.
+            BEGIN
+               SELECT MAX(CASE WHEN rn = 1 THEN dias_atraso ELSE 0 END),
+                      MAX(CASE WHEN rn = 2 THEN dias_atraso ELSE 0 END),
+                      MAX(CASE WHEN rn = 3 THEN dias_atraso ELSE 0 END),
+                      MAX(CASE WHEN rn = 4 THEN dias_atraso ELSE 0 END),
+                      MAX(CASE WHEN rn = 1 THEN f_cancelacion END),
+                      MAX(CASE WHEN rn = 2 THEN f_cancelacion END),
+                      MAX(CASE WHEN rn = 3 THEN f_cancelacion END),
+                      MAX(CASE WHEN rn = 4 THEN f_cancelacion END)
+               INTO   vl_cuota4, vl_cuota3, vl_cuota2, vl_cuota1,
+                      vl_fecha4, vl_fecha3, vl_fecha2, vl_fecha1
+               FROM (
+                  SELECT (f_cancelacion - f_cuota) dias_atraso,
+                         f_cancelacion,
+                         ROW_NUMBER() OVER (ORDER BY no_cuota) rn
+                  FROM (
+                     SELECT f_cancelacion, f_cuota, no_cuota,
+                            MAX(no_cuota) OVER () max_cuota
+                     FROM   PR_PLAN_PAGOS
+                     WHERE  no_credito     = TO_NUMBER(v_no_credito)
+                       AND  estado         = 'C'
+                       AND  no_cuota       > 0
+                       AND  codigo_empresa = p_cod_empresa
+                  )
+                  WHERE no_cuota >= max_cuota - 3
+               );
+            EXCEPTION
+               WHEN NO_DATA_FOUND THEN
+                  vl_cuota4:=0;    vl_cuota3:=0;    vl_cuota2:=0;    vl_cuota1:=0;
+                  vl_fecha4:=NULL; vl_fecha3:=NULL; vl_fecha2:=NULL; vl_fecha1:=NULL;
+            END;
       ELSE
          v_fec_cuota := NULL;
       END IF;
       --
-      -- Inserta las operaciones bajo linea
-      --
+      -- Inserta las operaciones fuera de linea
+      -- [TRAZABILIDAD] INSERT original a PR_OPERACIONES_TMP:
+      /*
       INSERT INTO PR_OPERACIONES_TMP ( sesion            , num_tramite        , cod_persona,
                                        des_moneda        , cod_sucursal       , fec_primer_desembolso,
                                        mon_saldo         , mon_utilizar       , f_vencimiento,
@@ -574,6 +714,28 @@ BEGIN
                                        vl_cuota1            , vl_cuota2          , vl_cuota3,
                                        vl_cuota4            , vl_cuota5          , vl_cuota6,
                                        v_dias_atraso        );
+      */
+      INSERT INTO pr.PR_ANTEC_CRED_GTT (
+                      cod_empresa            , num_tramite              , tipo_registro,
+                      des_moneda             , fec_inicio               , fec_vencimiento,
+                      saldo_directo_usd      , saldo_contingente_usd    , monto_desembolsado_usd,
+                      des_producto           , des_estado               , des_instrumento,
+                      nom_cliente            , fec_vto_prox_cuota       ,
+                      fec_cancelacion_cuota1 , fec_cancelacion_cuota2   ,
+                      fec_cancelacion_cuota3 , fec_cancelacion_cuota4   ,
+                      dias_mora_cuota1       , dias_mora_cuota2         , dias_mora_cuota3,
+                      dias_mora_cuota4       , dias_atraso              )
+               VALUES (
+                      p_cod_empresa          , r_op_fl.num_tramite      , 'FL',
+                      v_abrev_moneda         , v_fec_inicio             , v_fecha_vencimiento,
+                      v_Saldo_dir_USD        , v_Saldo_cont_USD         , v_MontoDes_USD,
+                      v_desc_producto        , v_abrev_estado           , v_desc_instrumento2,
+                      NULL                   ,
+                      v_fec_cuota            ,
+                      vl_fecha1              , vl_fecha2                ,
+                      vl_fecha3              , vl_fecha4                ,
+                      vl_cuota1              , vl_cuota2                , vl_cuota3,
+                      vl_cuota4              , v_dias_atraso            );
       --
       vl_cuota4 := 0;
       vl_cuota3 := 0;
@@ -641,14 +803,14 @@ BEGIN
                                              v_Saldo_cont,
                                              P_Fecha_Hoy,
                                              r_op_ind.Cod_Moneda,
-                                             P_Cod_Moneda_USD,
+                                             v_cod_moneda_usd,
                                              p_Error,
                                              V_Saldo_cont_USD);
             Pr_Utl.Convierte_moneda_a_moneda(P_Cod_Empresa,
                                              v_Saldo_directo,
                                              P_Fecha_Hoy,
                                              r_op_ind.Cod_Moneda,
-                                             P_Cod_Moneda_USD,
+                                             v_cod_moneda_usd,
                                              p_Error,
                                              V_Saldo_dir_USD);
             --Convierte el monto desembolsado a dolares
@@ -656,12 +818,13 @@ BEGIN
                                              r_op_ind.mon_operacion,
                                              P_Fecha_Hoy,
                                              r_op_ind.Cod_Moneda,
-                                             P_Cod_Moneda_USD,
+                                             v_cod_moneda_usd,
                                              p_Error,
                                              v_MontoDes_USD);
       --
       -- Obtiene el nombre del Cliente
-      --
+      -- [TRAZABILIDAD] SELECT individual por tramite (reemplazado por JOIN en cursor v_cur_op_ind):
+      /*
       BEGIN
          SELECT SUBSTR(nombre,1,60)
            INTO v_desc_instrumento3
@@ -671,7 +834,12 @@ BEGIN
             AND a.num_tramite = r_op_ind.num_tramite
             AND a.cod_empresa = p_cod_empresa;
       END;
+      */
+      -- [OPTIMIZADO 24/03/2026] Nombre ya viene en el cursor (JOIN en declaracion):
+      v_nom_cliente := r_op_ind.nombre_titular;
       -- Inserta las operaciones indirectas
+      -- [TRAZABILIDAD] INSERT original a PR_OPERACIONES_TMP:
+      /*
        INSERT INTO PR_OPERACIONES_TMP
                   ( sesion               , num_tramite          , cod_persona,
                     des_moneda           , cod_sucursal         , fec_primer_desembolso,
@@ -684,6 +852,17 @@ BEGIN
                     v_Saldo_dir_USD         , v_Saldo_cont_USD      , v_fecha_vencimiento,
                     v_MontoDes_USD          , v_desc_producto       , v_abrev_estado,
                     v_desc_instrumento3     );
+      */
+      INSERT INTO pr.PR_ANTEC_CRED_GTT (
+                      cod_empresa          , num_tramite              , tipo_registro,
+                      des_moneda           , fec_inicio               , fec_vencimiento,
+                      saldo_directo_usd    , saldo_contingente_usd    , monto_desembolsado_usd,
+                      des_producto         , des_estado               , nom_cliente        )
+               VALUES (
+                      p_cod_empresa        , r_op_ind.num_tramite     , 'IND',
+                      v_abrev_moneda       , v_fec_inicio             , v_fecha_vencimiento,
+                      v_Saldo_dir_USD      , v_Saldo_cont_USD         , v_MontoDes_USD,
+                      v_desc_producto      , v_abrev_estado           , v_nom_cliente    );
       END LOOP; -- Operaciones Indirectas
    IF p_error IS NOT NULL THEN
         RETURN;
