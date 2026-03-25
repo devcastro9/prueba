@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( --p_sesion IN VARCHAR2,
+CREATE OR REPLACE PROCEDURE  pr.Carga_Prr0402g ( --p_sesion IN VARCHAR2,
                                                 p_cod_empresa     IN VARCHAR2,
                                                 p_cod_cliente     IN VARCHAR2,
                                                 p_fecha_hoy       IN DATE,

@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
+CREATE OR REPLACE PROCEDURE pr.Carga_Prr0402g ( p_sesion          IN VARCHAR2,
                                                 p_cod_empresa     IN VARCHAR2,
                                                 p_cod_cliente     IN VARCHAR2,
                                                 p_linea           IN VARCHAR2,
@@ -7,7 +7,7 @@ CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
                                                 p_fecha_hoy       IN DATE,
                                                 p_error           OUT VARCHAR2) IS
 --
--- Fecha de creación : 14/02/2001
+-- Fecha de creaciï¿½n : 14/02/2001
 -- Analista          : Gustavo Anzoategui
 -- Fecha de modific. : 13/11/2002
 -- Analista          : Luis De la Quintana
@@ -17,12 +17,12 @@ CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
 -- Fecha de modific. : 13/04/2004
 -- Analista          : Luis De la Quintana
 -- Fecha de Modific. : 29/06/2005
--- Analista          : José luis Durán S.
--- Objetivo:De las deudas indirectas, ya no sale el instrumento sino más bien el nombre del cliente
+-- Analista          : Josï¿½ luis Durï¿½n S.
+-- Objetivo:De las deudas indirectas, ya no sale el instrumento sino mï¿½s bien el nombre del cliente
 --
 -- Fecha de Modific. : 11/05/2017
--- Analista          : Noé Quenta Chavez.
--- Objetivo          :Convertir el monto desembolsado de todas las operaciones a dólares
+-- Analista          : Noï¿½ Quenta Chavez.
+-- Objetivo          :Convertir el monto desembolsado de todas las operaciones a dï¿½lares
 -----------------------------------------------------------------------------------
    v_des_moneda            moneda.descripcion%TYPE;
    v_abrev_moneda          moneda.abreviatura%TYPE;
@@ -54,8 +54,8 @@ CREATE OR REPLACE PROCEDURE    Carga_Prr0402g ( p_sesion          IN VARCHAR2,
    v_saldo_directo     NUMBER(16,2);
    v_saldo_dir_USD     NUMBER(16,2);
    v_monto_operacion   NUMBER(16,2);
-   v_MontoOp_USD       NUMBER(16,2);  --variable para obtener el monto desembolsado de lineas de credito en dólares
-   v_MontoDes_USD       NUMBER(16,2);  --variable para obtener el monto desembolsado de operaciones bajo linea en dólares
+   v_MontoOp_USD       NUMBER(16,2);  --variable para obtener el monto desembolsado de lineas de credito en dï¿½lares
+   v_MontoDes_USD       NUMBER(16,2);  --variable para obtener el monto desembolsado de operaciones bajo linea en dï¿½lares
    v_intereses_ope     NUMBER(16,2);
    v_comision          NUMBER(16,2);
    v_cargos            NUMBER(16,2);
@@ -228,7 +228,7 @@ BEGIN
                                         P_Cod_Moneda_USD,
                                         p_Error,
                                         V_SaldoDisp_USD);
-      --Convierte a dólares el monto desembolsado
+      --Convierte a dï¿½lares el monto desembolsado
       Pr_Utl.Convierte_moneda_a_moneda(P_Cod_Empresa,
                                         reg_lineas.monto_credito,
                                         P_Fecha_Hoy,
@@ -371,7 +371,7 @@ BEGIN
                END;
             END IF;
             --
-            -- Busca los 6 últimos pagos y revisa los días de mora
+            -- Busca los 6 ï¿½ltimos pagos y revisa los dï¿½as de mora
             --
             FOR reg_plan IN cur_plan ( p_cod_empresa,
                                        TO_NUMBER(v_no_credito))
@@ -539,7 +539,7 @@ BEGIN
             END;
          END IF;
             --
-            -- Busca los 6 últimos pagos y revisa los días de mora
+            -- Busca los 6 ï¿½ltimos pagos y revisa los dï¿½as de mora
             --
             FOR reg_plan IN cur_plan ( p_cod_empresa,
                                        TO_NUMBER(v_no_credito))

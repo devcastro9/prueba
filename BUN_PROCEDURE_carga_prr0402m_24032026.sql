@@ -9,7 +9,8 @@ create or replace procedure pr.carga_prr0402m (
 -- Objetivo          : Insertar en la tabla PR_ANTEC_CRED_GTT los registros
 --                     para múltiples códigos de empresa por cliente
    v_ant_cred       PA.PARAM_GENERALES.ABREV_PARAMETRO%TYPE;
-   p_error    := null;
+BEGIN
+   p_error := null;
    v_ant_cred := pa.PARAMETRO_GENERAL('PR', 'ANTECEDENTES_CRED');
    
    DELETE FROM pr.PR_ANTEC_CRED_GTT;
