@@ -36,20 +36,20 @@ CREATE OR REPLACE PROCEDURE pr.Carga_Prr0402g ( --p_sesion          IN VARCHAR2,
 -----------------------------------------------------------------------------------
    v_des_moneda            moneda.descripcion%TYPE;
    v_abrev_moneda          moneda.abreviatura%TYPE;
-   v_des_sucursal          cg_sucursales.descripcion%TYPE;
-   v_des_unidad_negocio    PR_UNIDADES_NEGOCIO.descripcion%TYPE;
-   v_des_unidad_ejecutora  VARCHAR2(80);
+   --v_des_sucursal          cg_sucursales.descripcion%TYPE;--[25/03/2026]
+   --v_des_unidad_negocio    PR_UNIDADES_NEGOCIO.descripcion%TYPE;--[25/03/2026]
+   --v_des_unidad_ejecutora  VARCHAR2(80);--[25/03/2026]
    v_desc_producto         VARCHAR2(60);
    v_des_operacion         VARCHAR2(60);
    v_no_credito            VARCHAR2(20);
    v_desc_estado           PR_ESTADOS_CREDITO.descripcion_estado%TYPE;
    v_abrev_estado          PR_ESTADOS_CREDITO.abrev_estado%TYPE;
-   v_desc_instrumento      VARCHAR2(60);
-   v_saldo_tramite         NUMBER(16,2);
-   v_des_calif             VARCHAR2(30);
-   v_nom_cliente           personas.nombre%TYPE;
-   v_nom_analista          personas.nombre%TYPE;
-      -- Var. Utilizadas en Datos Generales Tramite
+   --v_desc_instrumento      VARCHAR2(60); --[25/03/2026]
+   --v_saldo_tramite         NUMBER(16,2); --[25/03/2026]
+   --v_des_calif             VARCHAR2(30); --[25/03/2026]
+   --v_nom_cliente           personas.nombre%TYPE; --[25/03/2026]
+   --v_nom_analista          personas.nombre%TYPE; --[25/03/2026]
+   -- Var. Utilizadas en Datos Generales Tramite
    v_tasa_interes      NUMBER(16,2);
    v_fecha_vencimiento DATE;
    v_fecha_cancelacion DATE;
@@ -77,21 +77,21 @@ CREATE OR REPLACE PROCEDURE pr.Carga_Prr0402g ( --p_sesion          IN VARCHAR2,
    v_linea             PA.PARAM_GENERALES.ABREV_PARAMETRO%TYPE;  -- COD_OPER_LINEAS_CR
    v_cod_moneda_usd    PA.PARAM_GENERALES.ABREV_PARAMETRO%TYPE;  -- COD_MONEDA_DOLAR
    -- Variables utilizadas en la prevision anterior
-   v_cod_estado_anterior  VARCHAR2(2);
-   v_prev_cont_anterior   NUMBER(16,2);
-   v_prev_anterior        NUMBER(16,2);
-   v_mensaje              VARCHAR2(6);
-   v_porc_prev            NUMBER(10,4);
-   v_cod_calif            VARCHAR2(2);
+   --v_cod_estado_anterior  VARCHAR2(2); --[25/03/2026]
+   --v_prev_cont_anterior   NUMBER(16,2); --[25/03/2026]
+   --v_prev_anterior        NUMBER(16,2); --[25/03/2026]
+   --v_mensaje              VARCHAR2(6); --[25/03/2026]
+   --v_porc_prev            NUMBER(10,4); --[25/03/2026]
+   --v_cod_calif            VARCHAR2(2); --[25/03/2026]
   -- Variables utilizadas en la prevision actual
-   vl_Cod_Estado_Actual    VARCHAR2(2);
-   vl_Prev_Cont_Actual     NUMBER(16,2);
-   vl_prev_actual          NUMBER(16,2);
-   vl_prev_vigente         NUMBER(16,2);
-   vl_prev_estado          NUMBER(16,2);
-   vl_mensaje              VARCHAR2(6);
-   vl_porc_prev            NUMBER(10,4);
-   vl_cod_calif            VARCHAR2(2);
+   --vl_Cod_Estado_Actual    VARCHAR2(2); --[25/03/2026]
+   --vl_Prev_Cont_Actual     NUMBER(16,2); --[25/03/2026]
+   --vl_prev_actual          NUMBER(16,2); --[25/03/2026]
+   --vl_prev_vigente         NUMBER(16,2); --[25/03/2026]
+   --vl_prev_estado          NUMBER(16,2); --[25/03/2026]
+   --vl_mensaje              VARCHAR2(6); --[25/03/2026]
+   --vl_porc_prev            NUMBER(10,4); --[25/03/2026]
+   --vl_cod_calif            VARCHAR2(2); --[25/03/2026]
    v_desc_instrumento1     VARCHAR2(60);
    v_desc_instrumento2     VARCHAR2(60);
    v_desc_instrumento3     VARCHAR2(60);
@@ -106,10 +106,10 @@ CREATE OR REPLACE PROCEDURE pr.Carga_Prr0402g ( --p_sesion          IN VARCHAR2,
    vl_fecha2               DATE;
    vl_fecha3               DATE;
    vl_fecha4               DATE;
-   vl_fecha5               DATE;
-   vl_fecha6               DATE;
+   --vl_fecha5               DATE;--[25/03/2026]
+   --vl_fecha6               DATE;--[25/03/2026]
    --
-   vl_saldo_dif            NUMBER(16,2);  --OBCHOQUE 19/05/2020
+   --vl_saldo_dif            NUMBER(16,2);  --OBCHOQUE 19/05/2020 --[25/03/2026]
    --
    -- [25/03/2026] BULK COLLECT + FORALL: se definen un tipo registro espejo de la GTT
    --              y cuatro colecciones (una por TIPO_REGISTRO). Los loops acumulan filas
@@ -426,7 +426,7 @@ BEGIN
          Pr_Abon3_Bd.Datos_Generales_Tramite ( p_cod_empresa,
                                                r_op_bl.num_tramite,
                                                p_fecha_hoy,
-                                               v_no_credito,--no_operacion en tabla gtt
+                                               v_no_credito,
                                                v_tasa_interes,
                                                v_dias_plazo,
                                                v_fec_inicio,
@@ -511,6 +511,7 @@ BEGIN
             RETURN;
          END IF;
          IF r_op_bl.cod_tip_operacion = 1 THEN
+            v_fec_cuota := NULL; -- [25/03/2026] reset para evitar valor residual de la iteracion anterior
             -- Obtiene la Fecha de Vencimiento de la Cuota, cuando el estado en el Plan de Pagos es D = Activo
             IF r_op_bl.codigo_estado = Pr_Utl_Estados.verif_estado_act_cast (r_op_bl.codigo_estado) THEN
                BEGIN
@@ -689,7 +690,7 @@ BEGIN
       Pr_Abon3_Bd.Datos_Generales_Tramite ( p_cod_empresa,
                                             r_op_fl.num_tramite,
                                             p_fecha_hoy,
-                                            v_no_credito,--no_operacion en tabla gtt
+                                            v_no_credito,
                                             v_tasa_interes,
                                             v_dias_plazo,
                                             v_fec_inicio,
@@ -778,6 +779,7 @@ BEGIN
          RETURN;
       END IF;
       IF r_op_fl.cod_tip_operacion = 1 THEN
+         v_fec_cuota := NULL; -- [25/03/2026] reset para evitar valor residual de la iteracion anterior
          -- Obtiene la Fecha de Vencimiento de la Cuota, cuando el estado en el Plan de Pagos es D = Activo
          IF r_op_fl.codigo_estado = Pr_Utl_Estados.verif_estado_act_cast (r_op_fl.codigo_estado) THEN
             BEGIN
@@ -955,7 +957,7 @@ BEGIN
       Pr_Abon3_Bd.Datos_Generales_Tramite ( p_cod_empresa,
                                             r_op_ind.num_tramite,
                                             p_fecha_hoy,
-                                            v_no_credito,--no_operacion en tabla gtt
+                                            v_no_credito,
                                             v_tasa_interes,
                                             v_dias_plazo,
                                             v_fec_inicio,

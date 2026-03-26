@@ -3,11 +3,19 @@ create or replace procedure pr.carga_prr0402m (
    p_fecha_hoy   in date,
    p_error       out varchar2
 ) is
+-- mocastro - FSN-2026-03-24 - PR_ANTEC_CRED_GTT: Procedimiento wrapper para carga multi-empresa sin commits intermedios
+-- Fecha de creacion : 24/03/2026
+-- Objetivo          : Procedimiento wrapper que carga la GTT PR_ANTEC_CRED_GTT
+--                     con informacion crediticia de un cliente para multiples empresas.
+--                     Itera sobre las empresas definidas en el parametro ANTECEDENTES_CRED
+--                     (PA.PARAM_GENERALES, formato '|COD1|COD2|...') y llama a
+--                     carga_prr0402g con p_commit=>FALSE para cada empresa, evitando
+--                     COMMITs intermedios entre empresas. Un unico COMMIT se ejecuta
+--                     al finalizar todas las empresas exitosamente, centralizando el
+--                     manejo transaccional de la carga multi-empresa.
+--                     La GTT es ON COMMIT PRESERVE ROWS; el DELETE inicial garantiza
+--                     que no queden datos de ejecuciones anteriores en la misma sesion.
 --
--- Procedimiento Wrapper/Envolvente para cargar informacion crediticia de múltiples empresas
--- Fecha de creación : 24/03/2026
--- Objetivo          : Insertar en la tabla PR_ANTEC_CRED_GTT los registros
---                     para múltiples códigos de empresa por cliente
    v_ant_cred       PA.PARAM_GENERALES.ABREV_PARAMETRO%TYPE;
 BEGIN
    p_error := null;
@@ -20,10 +28,6 @@ BEGIN
         from pa.empresa e
        where instr(v_ant_cred, '|' || e.cod_empresa || '|') > 0
    ) loop
-      -- [25/03/2026] Se pasa p_commit=>FALSE para evitar COMMITs intermedios entre empresas.
-      --              La GTT es ON COMMIT PRESERVE ROWS, por lo que un COMMIT intermedio no
-      --              vacia los datos; sin embargo, se centraliza el COMMIT en el wrapper
-      --              para un correcto manejo transaccional de la carga multi-empresa.
       pr.carga_prr0402g(
          reg.cod_empresa,
          p_cod_cliente,
@@ -39,10 +43,10 @@ BEGIN
          return;
       end if;
    end loop;
-   -- [25/03/2026] COMMIT unico al finalizar todas las empresas.
-   COMMIT;
+   commit;
 exception
    when others then
-      p_error := 'Error no controlado en carga_prr0402m: ' || sqlerrm;
+      p_error := 'Error en carga_prr0402m: ' || sqlerrm;
+      rollback;
 end carga_prr0402m;
 /

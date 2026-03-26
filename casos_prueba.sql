@@ -2,7 +2,7 @@
 -- DOP paralelo: 4 (ajustar según CPUs del servidor).
 WITH
     -- base: join único entre personas y trámites activos.
-    -- Para incluir/excluir estados agregar o quitar códigos del NOT IN ('C','B','X','N','M','O').
+    -- Para incluir/excluir estados agregar o quitar códigos del NOT IN ('C','B','X','N','M','O','R').
     base
     AS
         (SELECT /*+ materialize parallel(p, 4) parallel(o, 4) */
@@ -14,7 +14,7 @@ WITH
                 INNER JOIN pr.pr_tramite o
                     ON     p.cod_empresa = o.cod_empresa
                        AND p.num_tramite = o.num_tramite
-          WHERE     o.codigo_estado NOT IN ('C', 'B', 'X', 'N', 'M', 'O')),
+          WHERE     o.codigo_estado NOT IN ('C', 'B', 'X', 'N', 'M', 'O', 'R')),
     -- persona_filtrada: filtra antes del LISTAGG para no procesar personas descartadas.
     -- Umbrales: > 1 empresa  Y  > 1 tipo de operación  (cambiar el valor numérico según requerimiento).
     -- MATERIALIZE: evita que Oracle re-ejecute esta CTE en cada una de las 3 referencias.
