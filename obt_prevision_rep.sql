@@ -3,7 +3,8 @@ PROCEDURE pr.obt_prevision_rep (
     pr_cod_cliente IN  VARCHAR2,
     p_fecha        IN  DATE,
     tot_prevision  OUT NUMBER,
-    tot_pre_con    OUT NUMBER
+    tot_pre_con    OUT NUMBER,
+    p_error OUT VARCHAR2
 )
 IS
     --
@@ -98,11 +99,12 @@ IS
     v_num_proceso      pr_provisiones.num_proceso%TYPE;
     v_pre_con          NUMBER(16,2);
     v_prevision        NUMBER(16,2);
-
+    v_cod_moneda_usd    PA.PARAM_GENERALES.ABREV_PARAMETRO%TYPE;
 BEGIN
     --
     -- Obtiene nro. de proceso de prevision
     --
+   v_cod_moneda_usd := pa.PARAMETRO_GENERAL('PR', 'COD_MONEDA_DOLAR');-- [25/03/2026]
     BEGIN
         SELECT MAX(num_proceso)
           INTO v_num_proceso
@@ -114,12 +116,12 @@ BEGIN
 
     FOR reg_tramite IN cur_tramite LOOP
 
-        :bkdetpre.num_tramite       := reg_tramite.num_tramite;
-        :bkdetpre.codigo_estado     := reg_tramite.codigo_estado;
-        :bkdetpre.cod_moneda        := reg_tramite.cod_moneda;
-        :bkdetpre.cod_tip_operacion := reg_tramite.cod_tip_operacion;
-        :bkdetpre.tipo_operacion    := reg_tramite.descripcion;
-        :bkdetpre.linea             := reg_tramite.bajo_linea_credito;
+        --:bkdetpre.num_tramite       := reg_tramite.num_tramite;
+        --:bkdetpre.codigo_estado     := reg_tramite.codigo_estado;
+        --:bkdetpre.cod_moneda        := reg_tramite.cod_moneda;
+        --:bkdetpre.cod_tip_operacion := reg_tramite.cod_tip_operacion;
+        --:bkdetpre.tipo_operacion    := reg_tramite.descripcion;
+        --:bkdetpre.linea             := reg_tramite.bajo_linea_credito;
 
         ---
         --- Obtiene prevision
@@ -139,7 +141,7 @@ BEGIN
                 NULL;
         END;
 
-        IF reg_tramite.cod_moneda <> :cod_dolares THEN
+        IF reg_tramite.cod_moneda <>     v_cod_moneda_usd THEN
             --
             -- Cambia la moneda a Dolares Prevision Contingente
             --
@@ -148,11 +150,10 @@ BEGIN
                 v_pre_con,
                 p_fecha,
                 TO_NUMBER(reg_tramite.cod_moneda),
-                :variables.cod_dolares,
-                :variables.mensaje,
-                :variables.mon_prevision
+                v_cod_moneda_usd,
+                p_error,
+                v_pre_con
             );
-            v_pre_con := :variables.mon_prevision;
 
             --
             -- Cambia la moneda a Dolares Prevision Normal
@@ -162,11 +163,10 @@ BEGIN
                 v_prevision,
                 p_fecha,
                 TO_NUMBER(reg_tramite.cod_moneda),
-                :variables.cod_dolares,
-                :variables.mensaje,
-                :variables.prevision
+                v_cod_moneda_usd,
+                p_error,
+                v_prevision
             );
-            v_prevision := :variables.prevision;
 
         END IF;
 
