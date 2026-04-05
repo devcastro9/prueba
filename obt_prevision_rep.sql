@@ -25,11 +25,11 @@ IS
                pr_tip_operacion
          WHERE PR_TRAMITE.cod_tip_operacion = PR_TIP_OPERACION.cod_tip_operacion
            AND PR_TRAMITE.cod_tip_operacion IN (
-                   :variables.cod_cartera,
-                   :variables.cod_boletas,
-                   :variables.cod_sobregiros,
-                   :variables.cod_tarjeta,
-                   :variables.cod_factoraje
+                   pa.PARAMETRO_GENERAL('PR', 'COD_OPER_CARTERA'),
+                  pa.PARAMETRO_GENERAL('PR', 'COD_OPER_COMEX'),
+                   pa.PARAMETRO_GENERAL('PR', 'COD_OPER_SOBREGIRO'),
+                   pa.PARAMETRO_GENERAL('PR', 'COD_OPER_TARJETA'),
+                   pa.PARAMETRO_GENERAL('PR', 'COD_OPER_FACTORAJE')
                )
            AND PR_TRAMITE.codigo_estado     = Pr_Utl_Estados.Verif_Estado_Act_Cast(Pr_Tramite.Codigo_Estado)
            AND PR_TIP_CREDITO.cod_tip_credito = PR_TRAMITE.cod_tip_credito
