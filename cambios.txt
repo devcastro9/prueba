@@ -1,0 +1,189 @@
+CAMBIOS NECESARIOS EN PR0349
+============================
+Fecha: 2026-04-05
+
+
+LOGICA GENERAL
+--------------
+
+Al abrir la forma:
+  1. Leer PA.PARAM_GENERALES donde param = 'ANTECEDENTES_CRED' (formato '|COD1|COD2|...')
+  2. Si :GLOBAL.CodEmpresa ESTA en el parametro:
+       - Modo multi-empresa: mostrar listbox con todas las empresas del parametro
+       - Al cambiar seleccion: actualizar :variables.CodEmpresa y recargar bloques
+  3. Si :GLOBAL.CodEmpresa NO esta en el parametro:
+       - Comportamiento actual sin ningun cambio
+
+
+CAMBIOS CONCRETOS
+-----------------
+
+
+1. BLOQUE VARIABLES -- agregar dos items
+----------------------------------------
+
+  Item: MULTI_EMPRESA
+    Tipo    : Text Item (no visible)
+    Largo   : 1
+    Uso     : 'S' = modo multi-empresa  /  'N' = modo normal
+
+  -- ANT_CRED_PARAM: NO es necesario. La funcion pr.empresa_en_antec_cred
+  -- encapsula la lectura del parametro y v_param se usa solo localmente
+  -- dentro de VERIFICA_ANTECRED para poblar el listbox.
+
+
+2. BLOQUE CONTROL -- agregar un List Item
+------------------------------------------
+
+  Item: LST_EMPRESA
+    Tipo          : List Item (Poplist o T-List)
+    Visible       : NO (se activa por codigo en VERIFICA_ANTECRED)
+    Canvas        : WIN (canvas principal)
+    Posicion      : cabecera del formulario, junto a la etiqueta "Empresa"
+    Etiqueta      : "Empresa"
+    Mapping Other : (ninguno)
+
+
+3. NUEVO PROCEDIMIENTO LOCAL: VERIFICA_ANTECRED
+------------------------------------------------
+
+NOTA: La deteccion de modalidad usa la funcion de base de datos
+      pr.empresa_en_antec_cred(vp_cod_empresa) ya disponible
+      (ver funcion_modalidad.sql). Retorna TRUE si la empresa
+      figura en el parametro ANTECEDENTES_CRED, FALSE si no.
+      No es necesario releer el parametro ni hacer INSTR manualmente.
+
+PROCEDURE verifica_antecred IS
+  v_param  VARCHAR2(500);
+  v_en_ant BOOLEAN;
+  v_idx    NUMBER := 1;
+BEGIN
+  -- Delegar la deteccion a la funcion de BD ya existente
+  v_en_ant := pr.empresa_en_antec_cred(:variables.CodEmpresa);
+
+  IF v_en_ant THEN
+
+    -- Empresa actual esta en el parametro -> modo multi-empresa
+    :variables.multi_empresa := 'S';
+
+    -- Leer el parametro solo para poblar el listbox (uso local, no se persiste)
+    v_param := pa.parametro_general('PR', 'ANTECEDENTES_CRED');
+
+    -- Poblar el listbox con las empresas del parametro
+    CLEAR_LIST('control.lst_empresa');
+    FOR reg IN (
+      SELECT e.cod_empresa, e.nombre
+        FROM pa.empresa e
+       WHERE INSTR(v_param, '|' || e.cod_empresa || '|') > 0
+       ORDER BY e.cod_empresa
+    ) LOOP
+      ADD_LIST_ELEMENT('control.lst_empresa', v_idx,
+                       reg.nombre, reg.cod_empresa);
+      v_idx := v_idx + 1;
+    END LOOP;
+
+    -- Seleccionar la empresa actual por defecto
+    SET_LIST_ELEMENT_VALUE('control.lst_empresa', :variables.CodEmpresa);
+    SET_ITEM_PROPERTY('control.lst_empresa', VISIBLE, PROPERTY_TRUE);
+
+  ELSE
+
+    -- Empresa NO esta en el parametro -> modo normal sin cambios
+    :variables.multi_empresa := 'N';
+    SET_ITEM_PROPERTY('control.lst_empresa', VISIBLE, PROPERTY_FALSE);
+
+  END IF;
+END;
+
+
+4. MODIFICAR INICIALIZA_FORMA
+------------------------------
+
+Agregar al final del procedimiento, luego de la llamada a IniVarGlobalesLocales:
+
+  verifica_antecred;
+
+
+5. NUEVO TRIGGER WHEN-LIST-CHANGED EN LST_EMPRESA
+--------------------------------------------------
+
+-- Actualizar la empresa activa con la seleccion del listbox
+:variables.CodEmpresa := :control.lst_empresa;
+
+-- Recargar todos los bloques que dependen de empresa
+GO_BLOCK('personas_x_tramite');
+EXECUTE_QUERY;
+
+GO_BLOCK('cuenta_efectivo');
+EXECUTE_QUERY;
+
+GO_BLOCK('cd_certificado');
+EXECUTE_QUERY;
+
+-- NOTA: repetir GO_BLOCK / EXECUTE_QUERY para cada bloque
+-- de datos relevante que use :variables.CodEmpresa como filtro.
+-- Al final retornar al bloque de navegacion principal:
+GO_BLOCK('personas_x_tramite');
+
+
+FUNCION DE MODALIDAD DISPONIBLE EN BD
+--------------------------------------
+
+  pr.empresa_en_antec_cred(vp_cod_empresa IN VARCHAR2) RETURN BOOLEAN
+
+  Retorna TRUE  si la empresa figura en ANTECEDENTES_CRED.
+  Retorna FALSE si es NULL o no figura.
+  Encapsula la lectura del parametro y el INSTR, evitando duplicar
+  esa logica en el codigo Forms.
+  Usar esta funcion como unica fuente de verdad para la deteccion
+  de modalidad, tanto en la forma como en cualquier otro objeto de BD.
+
+
+POR QUE LOS PROCEDIMIENTOS DE CONSULTA NO NECESITAN CAMBIOS
+------------------------------------------------------------
+
+Todos los cursores ya filtran con :variables.CodEmpresa.
+Basta actualizar esa variable desde el trigger WHEN-LIST-CHANGED
+para que las queries devuelvan datos de la empresa seleccionada.
+
+  OBTIENE_TRAMITES   -> PR_TRAMITE.cod_empresa = :variables.CodEmpresa
+  OBTIENE_TRAMITES2  -> igual
+  OBT_RECIPROCIDAD   -> a.cod_empresa = :variables.codempresa (x5)
+  OBT_GAR_CLI        -> idem
+  LOVs/Record Groups -> idem
+
+
+RESUMEN DE OBJETOS A TOCAR
+---------------------------
+
+  Bloque VARIABLES      -> Agregar item MULTI_EMPRESA (ANT_CRED_PARAM no necesario)
+  Bloque CONTROL        -> Agregar List Item LST_EMPRESA
+  Canvas WIN            -> Posicionar LST_EMPRESA con etiqueta "Empresa"
+  INICIALIZA_FORMA      -> Agregar llamada a verifica_antecred al final
+  VERIFICA_ANTECRED     -> Crear como nuevo procedimiento local
+  WHEN-LIST-CHANGED     -> Crear como trigger del item LST_EMPRESA
+
+
+PUNTO A VERIFICAR
+-----------------
+
+El cursor cur_cxc dentro de OBTIENE_TRAMITES (tabla PR_CXC) NO filtra
+por empresa. Evaluar si en modo multi-empresa esto puede retornar datos
+de otras empresas de forma indeseada. De ser necesario, agregar:
+
+  AND cod_empresa = :variables.CodEmpresa
+
+al WHERE del cursor cur_cxc.
+
+PROCEDIMIENTOS DE PREVISION
+--------------------------------
+OBT_PREVISION 
+pr.carga_pr0349_prevdet(:variables.CodEmpresa, pr_cod_cliente, :variables.fecha, :variables.mensaje);
+
+FOR reg IN (SELECT * FROM pr.PR_PREVISION_DET_GTT
+             WHERE cod_empresa = :variables.CodEmpresa) LOOP
+    :bkdetpre.num_tramite       := reg.num_tramite;
+    :bkdetpre.codigo_estado     := reg.codigo_estado;
+    -- ... resto de columnas
+    create_record;
+END LOOP;
