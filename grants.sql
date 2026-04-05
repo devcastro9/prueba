@@ -28,8 +28,27 @@ GRANT SELECT ON PR.PR_ANTEC_CRED_GTT TO TMP_CONSULTA;
 
 GRANT SELECT ON PR.PR_ANTEC_CRED_GTT TO ROL_CONSULTA;
 
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO BI;
 
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO BPR;
 
---DROP PUBLIC SYNONYM PR_ANTEC_CRED_GTT;
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO BPL;
 
-CREATE OR REPLACE PUBLIC SYNONYM PR_ANTEC_CRED_GTT FOR PR.PR_ANTEC_CRED_GTT;
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO PL;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO BTC;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO TC;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO BGT;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO GT;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO BCE;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO CE;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO BCC;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO CC;
+

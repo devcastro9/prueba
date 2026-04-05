@@ -16,7 +16,7 @@ BEGIN
     IF vp_cod_empresa IS NULL THEN
         vl_result := FALSE;
     ELSE
-        vr_ant_cred := NVL(pa.PARAMETRO_GENERAL('PR', 'ANTECEDENTES_CRED'), '');
+        vr_ant_cred := pa.PARAMETRO_GENERAL('PR', 'ANTECEDENTES_CRED');
         vl_result   := INSTR(vr_ant_cred, '|' || vp_cod_empresa || '|') > 0;
     END IF;
 
