@@ -731,183 +731,316 @@ ORDER BY FEC_INICIO;]]>
             <geometryInfo x="1.50000" y="0.05000" width="6.00000"
              height="0.14587"/>
           </field>
+          <frame name="M_LINEAS_WRAP">
+            <geometryInfo x="0.03000" y="0.26000" width="10.85000"
+             height="1.05000"/>
+            <generalLayout verticalElasticity="variable"/>
+            <advancedLayout formatTrigger="m_lineas_wrapformattrigger"/>
+            <visualSettings fillPattern="transparent"
+             lineForegroundColor="darkblue"/>
           <text name="B_LineasTitle" minWidowLines="1">
             <textSettings spacing="0"/>
             <geometryInfo x="0.05000" y="0.28000" width="3.00000"
              height="0.14587"/>
             <textSegment>
-              <font face="Courier New" size="8" bold="yes"
+              <font face="Courier New" size="10" bold="yes"
                textColor="darkblue"/>
               <string>
               <![CDATA[LINEAS DE CREDITO]]>
               </string>
             </textSegment>
           </text>
-          <frame name="M_G_LINEAS_HDR">
-            <geometryInfo x="0.05000" y="0.44000" width="10.80000"
-             height="0.14587"/>
-            <visualSettings fillPattern="transparent"
-             lineForegroundColor="darkgray"/>
-            <text name="B_H_LIN_Op" minWidowLines="1">
-              <textSettings spacing="0"/>
-              <geometryInfo x="0.05000" y="0.44000" width="1.00000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[No.Operacion]]></string>
-              </textSegment>
-            </text>
-            <text name="B_H_LIN_Tram" minWidowLines="1">
-              <textSettings spacing="0"/>
-              <geometryInfo x="1.10000" y="0.44000" width="0.80000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[Tramite]]></string>
-              </textSegment>
-            </text>
-            <text name="B_H_LIN_Ini" minWidowLines="1">
-              <textSettings spacing="0"/>
-              <geometryInfo x="1.95000" y="0.44000" width="0.80000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[Fec.Inicio]]></string>
-              </textSegment>
-            </text>
-            <text name="B_H_LIN_Ven" minWidowLines="1">
-              <textSettings spacing="0"/>
-              <geometryInfo x="2.80000" y="0.44000" width="0.80000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[Fec.Vencto.]]></string>
-              </textSegment>
-            </text>
-            <text name="B_H_LIN_Mon" minWidowLines="1">
-              <textSettings spacing="0"/>
-              <geometryInfo x="3.65000" y="0.44000" width="0.70000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[Moneda]]></string>
-              </textSegment>
-            </text>
-            <text name="B_H_LIN_Est" minWidowLines="1">
-              <textSettings spacing="0"/>
-              <geometryInfo x="4.40000" y="0.44000" width="0.90000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[Estado]]></string>
-              </textSegment>
-            </text>
-            <text name="B_H_LIN_Ins" minWidowLines="1">
-              <textSettings spacing="0"/>
-              <geometryInfo x="5.35000" y="0.44000" width="1.40000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[Instrumento]]></string>
-              </textSegment>
-            </text>
-            <text name="B_H_LIN_Pro" minWidowLines="1">
-              <textSettings spacing="0"/>
-              <geometryInfo x="6.80000" y="0.44000" width="1.40000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[Producto]]></string>
-              </textSegment>
-            </text>
-            <text name="B_H_LIN_SDir" minWidowLines="1">
-              <textSettings justify="end" spacing="0"/>
-              <geometryInfo x="8.25000" y="0.44000" width="1.25000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[Saldo Directo]]></string>
-              </textSegment>
-            </text>
-            <text name="B_H_LIN_SCon" minWidowLines="1">
-              <textSettings justify="end" spacing="0"/>
-              <geometryInfo x="9.55000" y="0.44000" width="1.25000"
-               height="0.14587"/>
-              <textSegment>
-                <font face="Courier New" size="7" bold="yes"/>
-                <string><![CDATA[Saldo Conting.]]></string>
-              </textSegment>
-            </text>
-          </frame>
           <repeatingFrame name="R_G_LINEAS" source="G_LINEAS"
            printDirection="down" minWidowRecords="1" columnMode="no">
-            <geometryInfo x="0.05000" y="0.60000" width="10.80000"
-             height="0.14587"/>
-            <generalLayout verticalElasticity="expand"/>
+            <geometryInfo x="0.05000" y="0.44000" width="10.80000"
+             height="0.60000"/>
+            <generalLayout verticalElasticity="variable"/>
+            <visualSettings fillPattern="transparent"
+             lineForegroundColor="darkgray"/>
+            <text name="B_L_NoLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="0.05000" y="0.46000" width="0.70000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Linea No.:]]></string>
+              </textSegment>
+            </text>
             <field name="F_NO_OPERACION_LIN" source="NO_OPERACION_LIN"
              minWidowLines="1" spacing="0" alignment="start">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="0.05000" y="0.60000" width="1.00000"
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="0.80000" y="0.46000" width="1.00000"
                height="0.12500"/>
             </field>
-            <field name="F_NUM_TRAMITE_LIN" source="NUM_TRAMITE_LIN"
+            <text name="B_L_ProdLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="1.90000" y="0.46000" width="0.70000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Producto:]]></string>
+              </textSegment>
+            </text>
+            <field name="F_DES_PRODUCTO_LIN" source="DES_PRODUCTO_LIN"
              minWidowLines="1" spacing="0" alignment="start">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="1.10000" y="0.60000" width="0.80000"
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="2.65000" y="0.46000" width="2.30000"
                height="0.12500"/>
             </field>
+            <text name="B_L_EstLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="5.00000" y="0.46000" width="0.55000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Estado:]]></string>
+              </textSegment>
+            </text>
+            <field name="F_DES_ESTADO_LIN" source="DES_ESTADO_LIN"
+             minWidowLines="1" spacing="0" alignment="start">
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="5.60000" y="0.46000" width="1.40000"
+               height="0.12500"/>
+            </field>
+            <text name="B_L_TramLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="7.05000" y="0.46000" width="0.65000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Tramite:]]></string>
+              </textSegment>
+            </text>
+            <field name="F_NUM_TRAMITE_LIN" source="NUM_TRAMITE_LIN"
+             minWidowLines="1" spacing="0" alignment="end">
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="7.75000" y="0.46000" width="1.00000"
+               height="0.12500"/>
+            </field>
+            <text name="B_L_MonLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="0.05000" y="0.60000" width="0.70000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Moneda:]]></string>
+              </textSegment>
+            </text>
+            <field name="F_DES_MONEDA_LIN" source="DES_MONEDA_LIN"
+             minWidowLines="1" spacing="0" alignment="start">
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="0.80000" y="0.60000" width="1.00000"
+               height="0.12500"/>
+            </field>
+            <text name="B_L_InsLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="1.90000" y="0.60000" width="0.85000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Instrumento:]]></string>
+              </textSegment>
+            </text>
+            <field name="F_DES_INSTRUMENTO_LIN" source="DES_INSTRUMENTO_LIN"
+             minWidowLines="1" spacing="0" alignment="start">
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="2.80000" y="0.60000" width="2.20000"
+               height="0.12500"/>
+            </field>
+            <text name="B_L_MtoLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="5.05000" y="0.60000" width="1.00000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Monto Linea:]]></string>
+              </textSegment>
+            </text>
+            <field name="F_MONTO_DESEMBOLSADO_LIN" source="MONTO_DESEMBOLSADO_LIN"
+             minWidowLines="1" formatMask="NNN,NNN,NNN,NN0.00" spacing="0"
+             alignment="end">
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="6.10000" y="0.60000" width="1.60000"
+               height="0.12500"/>
+            </field>
+            <text name="B_L_PRevLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="7.75000" y="0.60000" width="0.80000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Prox.Rev.:]]></string>
+              </textSegment>
+            </text>
+            <field name="F_FEC_PROX_REVISION_LIN" source="FEC_PROX_REVISION_LIN"
+             minWidowLines="1" formatMask="dd/mm/yyyy" spacing="0"
+             alignment="start">
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="8.60000" y="0.60000" width="0.90000"
+               height="0.12500"/>
+            </field>
+            <text name="B_L_AptLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="0.05000" y="0.74000" width="0.95000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Fec.Apertura:]]></string>
+              </textSegment>
+            </text>
             <field name="F_FEC_INICIO_LIN" source="FEC_INICIO_LIN"
              minWidowLines="1" formatMask="dd/mm/yyyy" spacing="0"
              alignment="start">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="1.95000" y="0.60000" width="0.80000"
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="1.05000" y="0.74000" width="0.90000"
                height="0.12500"/>
             </field>
+            <text name="B_L_VenLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="2.05000" y="0.74000" width="1.10000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Fec.Vencimiento:]]></string>
+              </textSegment>
+            </text>
             <field name="F_FEC_VENCIMIENTO_LIN" source="FEC_VENCIMIENTO_LIN"
              minWidowLines="1" formatMask="dd/mm/yyyy" spacing="0"
              alignment="start">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="2.80000" y="0.60000" width="0.80000"
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="3.20000" y="0.74000" width="0.90000"
                height="0.12500"/>
             </field>
-            <field name="F_DES_MONEDA_LIN" source="DES_MONEDA_LIN"
-             minWidowLines="1" spacing="0" alignment="start">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="3.65000" y="0.60000" width="0.70000"
+            <text name="B_L_SDirLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="5.05000" y="0.74000" width="1.00000"
                height="0.12500"/>
-            </field>
-            <field name="F_DES_ESTADO_LIN" source="DES_ESTADO_LIN"
-             minWidowLines="1" spacing="0" alignment="start">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="4.40000" y="0.60000" width="0.90000"
-               height="0.12500"/>
-            </field>
-            <field name="F_DES_INSTRUMENTO_LIN" source="DES_INSTRUMENTO_LIN"
-             minWidowLines="1" spacing="0" alignment="start">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="5.35000" y="0.60000" width="1.40000"
-               height="0.12500"/>
-            </field>
-            <field name="F_DES_PRODUCTO_LIN" source="DES_PRODUCTO_LIN"
-             minWidowLines="1" spacing="0" alignment="start">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="6.80000" y="0.60000" width="1.40000"
-               height="0.12500"/>
-            </field>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Saldo Directo:]]></string>
+              </textSegment>
+            </text>
             <field name="F_SALDO_DIRECTO_LIN" source="SALDO_DIRECTO_LIN"
              minWidowLines="1" formatMask="NNN,NNN,NNN,NN0.00" spacing="0"
              alignment="end">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="8.25000" y="0.60000" width="1.25000"
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="6.10000" y="0.74000" width="1.60000"
                height="0.12500"/>
             </field>
+            <text name="B_L_SConLbl" minWidowLines="1">
+              <textSettings spacing="0"/>
+              <geometryInfo x="7.75000" y="0.74000" width="1.10000"
+               height="0.12500"/>
+              <textSegment>
+                <font face="Courier New" size="8" bold="yes"/>
+                <string><![CDATA[Saldo Conting.:]]></string>
+              </textSegment>
+            </text>
             <field name="F_SALDO_CONTINGENTE_LIN" source="SALDO_CONTINGENTE_LIN"
              minWidowLines="1" formatMask="NNN,NNN,NNN,NN0.00" spacing="0"
              alignment="end">
-              <font face="Courier New" size="7"/>
-              <geometryInfo x="9.55000" y="0.60000" width="1.25000"
+              <font face="Courier New" size="8"/>
+              <geometryInfo x="8.90000" y="0.74000" width="1.60000"
                height="0.12500"/>
             </field>
+            <frame name="M_G_OP_BL_HDR">
+              <geometryInfo x="0.20000" y="0.90000" width="10.65000"
+               height="0.10000"/>
+              <advancedLayout printObjectOnPage="allPage"
+               basePrintingOn="enclosingObject"/>
+              <visualSettings fillPattern="transparent"
+               lineForegroundColor="darkgray"/>
+              <text name="B_H_BL_Op" minWidowLines="1">
+                <textSettings spacing="0"/>
+                <geometryInfo x="0.20000" y="0.90000" width="1.00000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[No.Operacion]]></string>
+                </textSegment>
+              </text>
+              <text name="B_H_BL_Tram" minWidowLines="1">
+                <textSettings spacing="0"/>
+                <geometryInfo x="1.25000" y="0.90000" width="0.75000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[Tramite]]></string>
+                </textSegment>
+              </text>
+              <text name="B_H_BL_Ini" minWidowLines="1">
+                <textSettings spacing="0"/>
+                <geometryInfo x="2.05000" y="0.90000" width="0.70000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[Fec.Inicio]]></string>
+                </textSegment>
+              </text>
+              <text name="B_H_BL_Ven" minWidowLines="1">
+                <textSettings spacing="0"/>
+                <geometryInfo x="2.80000" y="0.90000" width="0.70000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[Fec.Vencto.]]></string>
+                </textSegment>
+              </text>
+              <text name="B_H_BL_Mon" minWidowLines="1">
+                <textSettings spacing="0"/>
+                <geometryInfo x="3.55000" y="0.90000" width="0.70000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[Moneda]]></string>
+                </textSegment>
+              </text>
+              <text name="B_H_BL_Est" minWidowLines="1">
+                <textSettings spacing="0"/>
+                <geometryInfo x="4.30000" y="0.90000" width="0.90000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[Estado]]></string>
+                </textSegment>
+              </text>
+              <text name="B_H_BL_Ins" minWidowLines="1">
+                <textSettings spacing="0"/>
+                <geometryInfo x="5.25000" y="0.90000" width="1.40000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[Instrumento]]></string>
+                </textSegment>
+              </text>
+              <text name="B_H_BL_Pro" minWidowLines="1">
+                <textSettings spacing="0"/>
+                <geometryInfo x="6.70000" y="0.90000" width="1.40000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[Producto]]></string>
+                </textSegment>
+              </text>
+              <text name="B_H_BL_SDir" minWidowLines="1">
+                <textSettings justify="end" spacing="0"/>
+                <geometryInfo x="8.25000" y="0.90000" width="1.25000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[Saldo Directo]]></string>
+                </textSegment>
+              </text>
+              <text name="B_H_BL_SCon" minWidowLines="1">
+                <textSettings justify="end" spacing="0"/>
+                <geometryInfo x="9.55000" y="0.90000" width="1.25000"
+                 height="0.10000"/>
+                <textSegment>
+                  <font face="Courier New" size="6" bold="yes"/>
+                  <string><![CDATA[Saldo Conting.]]></string>
+                </textSegment>
+              </text>
+            </frame>
             <repeatingFrame name="R_G_OP_BL" source="G_OPERACIONES_BL"
              printDirection="down" minWidowRecords="1" columnMode="no">
               <geometryInfo x="0.20000" y="0.75000" width="10.65000"
@@ -1008,6 +1141,14 @@ ORDER BY FEC_INICIO;]]>
             <geometryInfo x="3.80000" y="1.10000" width="1.00000"
              height="0.14587"/>
           </field>
+          </frame>
+          <frame name="M_FL_WRAP">
+            <geometryInfo x="0.03000" y="1.33000" width="10.85000"
+             height="0.90000"/>
+            <generalLayout verticalElasticity="variable"/>
+            <advancedLayout formatTrigger="m_fl_wrapformattrigger"/>
+            <visualSettings fillPattern="transparent"
+             lineForegroundColor="darkblue"/>
           <text name="B_FLTitle" minWidowLines="1">
             <textSettings spacing="0"/>
             <geometryInfo x="0.05000" y="1.35000" width="3.00000"
@@ -1119,6 +1260,14 @@ ORDER BY FEC_INICIO;]]>
             <geometryInfo x="9.55000" y="2.05000" width="1.25000"
              height="0.14587"/>
           </field>
+          </frame>
+          <frame name="M_IND_WRAP">
+            <geometryInfo x="0.03000" y="2.28000" width="10.85000"
+             height="0.90000"/>
+            <generalLayout verticalElasticity="variable"/>
+            <advancedLayout formatTrigger="m_ind_wrapformattrigger"/>
+            <visualSettings fillPattern="transparent"
+             lineForegroundColor="darkblue"/>
           <text name="B_INDTitle" minWidowLines="1">
             <textSettings spacing="0"/>
             <geometryInfo x="0.05000" y="2.30000" width="3.80000"
@@ -1230,6 +1379,7 @@ ORDER BY FEC_INICIO;]]>
             <geometryInfo x="9.55000" y="3.00000" width="1.25000"
              height="0.14587"/>
           </field>
+          </frame>
         </repeatingFrame>
       </frame>
     </body>
@@ -1476,6 +1626,42 @@ begin
        return (FALSE);
     END IF;
   return (TRUE);
+end;]]>
+      </textSource>
+    </function>
+    <function name="m_lineas_wrapformattrigger">
+      <textSource>
+      <![CDATA[function M_LINEAS_WRAPFormatTrigger return boolean is
+begin
+  if nvl(:CS_LINEAS,0) > 0 then
+    return (TRUE);
+  else
+    return (FALSE);
+  end if;
+end;]]>
+      </textSource>
+    </function>
+    <function name="m_fl_wrapformattrigger">
+      <textSource>
+      <![CDATA[function M_FL_WRAPFormatTrigger return boolean is
+begin
+  if nvl(:CS_FL,0) > 0 then
+    return (TRUE);
+  else
+    return (FALSE);
+  end if;
+end;]]>
+      </textSource>
+    </function>
+    <function name="m_ind_wrapformattrigger">
+      <textSource>
+      <![CDATA[function M_IND_WRAPFormatTrigger return boolean is
+begin
+  if nvl(:CS_IND,0) > 0 then
+    return (TRUE);
+  else
+    return (FALSE);
+  end if;
 end;]]>
       </textSource>
     </function>
