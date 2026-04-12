@@ -52,3 +52,39 @@ GRANT EXECUTE ON pr.empresa_en_antec_cred TO BCC;
 
 GRANT EXECUTE ON pr.empresa_en_antec_cred TO CC;
 
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO TMP_ANALISTAS;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO TMP_CONSULTA;
+
+GRANT EXECUTE ON pr.empresa_en_antec_cred TO ROL_CONSULTA;
+
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO BI;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO BPR;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO BPL;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO PL;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO BTC;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO TC;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO BGT;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO GT;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO BCE;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO CE;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO BCC;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO CC;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO TMP_ANALISTAS;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO TMP_CONSULTA;
+
+GRANT EXECUTE ON pr.pkg_obt_prevision TO ROL_CONSULTA;

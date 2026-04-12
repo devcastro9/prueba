@@ -6,3 +6,7 @@ CREATE OR REPLACE PUBLIC SYNONYM PR_ANTEC_CRED_GTT FOR PR.PR_ANTEC_CRED_GTT;
 --DROP PUBLIC SYNONYM empresa_en_antec_cred;
 
 CREATE OR REPLACE PUBLIC SYNONYM empresa_en_antec_cred FOR pr.empresa_en_antec_cred;
+
+--DROP PUBLIC SYNONYM pkg_obt_prevision;
+
+CREATE OR REPLACE PUBLIC SYNONYM pkg_obt_prevision FOR pr.pkg_obt_prevision;

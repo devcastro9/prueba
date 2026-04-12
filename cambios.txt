@@ -153,15 +153,52 @@ para que las queries devuelvan datos de la empresa seleccionada.
   LOVs/Record Groups -> idem
 
 
-RESUMEN DE OBJETOS A TOCAR
----------------------------
+RESUMEN EJECUTIVO
+-----------------
 
-  Bloque VARIABLES      -> Agregar item MULTI_EMPRESA (ANT_CRED_PARAM no necesario)
-  Bloque CONTROL        -> Agregar List Item LST_EMPRESA
-  Canvas WIN            -> Posicionar LST_EMPRESA con etiqueta "Empresa"
-  INICIALIZA_FORMA      -> Agregar llamada a verifica_antecred al final
-  VERIFICA_ANTECRED     -> Crear como nuevo procedimiento local
-  WHEN-LIST-CHANGED     -> Crear como trigger del item LST_EMPRESA
+OBJETIVO
+  Incorporar funcionalidad multi-empresa a la consulta de antecedentes
+  crediticios (forma PR0349). Cuando la empresa del operador figura en
+  el parámetro PA.PARAM_GENERALES 'ANTECEDENTES_CRED', la forma habilita
+  un selector de empresa que permite consultar antecedentes de cualquiera
+  de las empresas del grupo sin necesidad de re-ingresar al sistema.
+
+ADVERTENCIA SOBRE IMPORTES
+  Pueden existir importes incongruentes en los datos presentados debido a
+  múltiples factores operativos, entre ellos:
+    - Doble cancelación total: puede originar saldos de capital negativos.
+    - Reprogramaciones o reversiones parciales no conciliadas entre empresas.
+    - Diferencias de corte de fecha entre registros de distintas empresas.
+  Estos casos son propios del negocio y no constituyen errores de la forma.
+
+ALCANCE TÉCNICO -- OBJETOS A MODIFICAR
+  Forma PR0349 (Oracle Forms)
+    Bloque VARIABLES      -> Agregar item MULTI_EMPRESA ('S'/'N', no visible)
+                             (ANT_CRED_PARAM no es necesario)
+    Bloque CONTROL        -> Agregar List Item LST_EMPRESA (Poplist/T-List)
+    Canvas WIN            -> Posicionar LST_EMPRESA con etiqueta "Empresa"
+    INICIALIZA_FORMA      -> Agregar llamada a VERIFICA_ANTECRED al final
+    VERIFICA_ANTECRED     -> Crear procedimiento local (detección de modo
+                             y carga del listbox vía pr.empresa_en_antec_cred)
+    WHEN-LIST-CHANGED     -> Crear trigger en LST_EMPRESA (actualiza
+                             :variables.CodEmpresa y relanza EXECUTE_QUERY
+                             en todos los bloques dependientes)
+
+  Base de datos
+    pr.empresa_en_antec_cred  -> Función ya disponible; usarla como única
+                                 fuente de verdad para la detección de modo
+    cur_cxc (OBTIENE_TRAMITES) -> Evaluar si requiere filtro adicional
+                                  AND cod_empresa = :variables.CodEmpresa
+                                  en modo multi-empresa (ver punto a verificar)
+
+FLUJO RESUMIDO
+  1. Al abrir la forma: INICIALIZA_FORMA llama a VERIFICA_ANTECRED.
+  2. VERIFICA_ANTECRED consulta pr.empresa_en_antec_cred con la empresa
+     del operador y determina el modo.
+  3. Modo multi-empresa (TRUE): popula LST_EMPRESA y lo hace visible.
+     Modo normal (FALSE):        oculta LST_EMPRESA; sin cambios de comportamiento.
+  4. Al cambiar la selección en LST_EMPRESA: WHEN-LIST-CHANGED actualiza
+     :variables.CodEmpresa y relanza las queries de todos los bloques de datos.
 
 
 PUNTO A VERIFICAR

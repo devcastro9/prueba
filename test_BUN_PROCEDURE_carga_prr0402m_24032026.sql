@@ -1,49 +1,16 @@
--- Test suite for pr.carga_prr0402m procedure
--- Tests the wrapper procedure for loading credit information
-
-declare
-    v_sesion       varchar2(50) := 'TEST_SESSION_' || to_char(sysdate, 'YYYYMMDDHH24MISS');
-    v_cod_cliente  varchar2(20) := '519650';
-    v_fecha_hoy    date := trunc(sysdate);
-    v_error        varchar2(4000);
-begin
-    -- Test 1: Normal execution with valid parameters
-    dbms_output.put_line('Test 1: Normal execution');
-    pr.carga_prr0402m(v_sesion, v_cod_cliente, v_fecha_hoy, v_error);
-    if v_error is null then
-        dbms_output.put_line('PASS: No errors returned');
-    else
-        dbms_output.put_line('FAIL: ' || v_error);
-    end if;
-
-    -- Test 2: Verify temporary table is cleared before processing
-    dbms_output.put_line('Test 2: Temporary table cleanup');
-    declare
-        v_count number;
-    begin
-        select count(*) into v_count from pr.pr_operaciones_tmp 
-         where sesion = v_sesion;
-        if v_count >= 0 then
-            dbms_output.put_line('PASS: Temporary table exists and is accessible');
-        end if;
-    end;
-
-    -- Test 3: Invalid client code
-    dbms_output.put_line('Test 3: Invalid client code');
-    v_error := null;
-    pr.carga_prr0402m('TEST_SESSION_2', 'INVALID_CODE', v_fecha_hoy, v_error);
-    dbms_output.put_line('Result: ' || nvl(v_error, 'No error'));
-
-    -- Test 4: Null session parameter
-    dbms_output.put_line('Test 4: Null session parameter');
-    v_error := null;
-    begin
-        pr.carga_prr0402m(null, v_cod_cliente, v_fecha_hoy, v_error);
-        dbms_output.put_line('Result: ' || nvl(v_error, 'Procedure executed'));
-    exception
-        when others then
-            dbms_output.put_line('Exception caught: ' || sqlerrm);
-    end;
-
-end;
-/
+UPDATE PA.FORMAS
+SET DESCRIPCION = 'Antecedentes Crediticios', --'Antecedentes en el B.U.S.A.',
+VERSION_VALIDA = '1.6.3', --'1.6.2',
+FECHA = SYSDATE, --TO_DATE('24/12/2024 23:06:32', 'DD/MM/YYYY HH24:MI:SS'),
+COD_USUARIO = 'mocastro', --'CARQUISPE',
+CAMBIO_REALIZADO = 'FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11' --'carquispe 12/12/2024 CAMBIO DE FUNCION Y VALIDACION DE CAMPO'
+WHERE COD_SISTEMA = 'PR' AND NOM_FORMA = 'PR0050';
+-- 1 row updated
+UPDATE PA.FORMAS
+SET DESCRIPCION = 'Antecedentes en el B.U.S.A.',
+VERSION_VALIDA = '1.6.2',
+FECHA = TO_DATE('24/12/2024 23:06:32', 'DD/MM/YYYY HH24:MI:SS'),
+COD_USUARIO = 'CARQUISPE',
+CAMBIO_REALIZADO = 'carquispe 12/12/2024 CAMBIO DE FUNCION Y VALIDACION DE CAMPO'
+WHERE COD_SISTEMA = 'PR' AND NOM_FORMA = 'PR0050';
+-- 1 row updated

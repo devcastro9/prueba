@@ -71,9 +71,9 @@ CREATE OR REPLACE PACKAGE BODY pr.pkg_obt_prevision AS
         );
         reg_tramite t_rec_tramite;
 
-        v_num_proceso PR_PROVISIONES.num_proceso%TYPE;
-        v_pre_con     NUMBER(16,2);
-        v_prevision   NUMBER(16,2);
+        v_num_proceso  PR_PROVISIONES.num_proceso%TYPE;
+        v_pre_contin   NUMBER(16,2);
+        v_pre_directa  NUMBER(16,2);
     BEGIN
         -- Si los parametros no cambiaron, los datos del cache siguen vigentes
         IF     g_cod_empresa = p_cod_empresa
@@ -114,13 +114,13 @@ CREATE OR REPLACE PACKAGE BODY pr.pkg_obt_prevision AS
                    PT.cod_tip_operacion,
                    PT.unidad_ejecutora
               FROM PR_TRAMITE PT
-                   JOIN personas_x_pr_tramite A
+                   INNER JOIN personas_x_pr_tramite A
                        ON  A.cod_empresa = PT.cod_empresa
                        AND A.num_tramite = PT.num_tramite
-                   JOIN PR_TIP_CREDITO PTC
+                   INNER JOIN PR_TIP_CREDITO PTC
                        ON  PTC.cod_tip_credito = PT.cod_tip_credito
                        AND PTC.cod_empresa     = PT.cod_empresa
-                   JOIN PR_TIP_OPERACION PTO
+                   INNER JOIN PR_TIP_OPERACION PTO
                        ON  PTO.cod_tip_operacion = PT.cod_tip_operacion
              WHERE PT.cod_tip_operacion IN (
                        v_op_cartera, v_op_comex, v_op_sobregiro,
@@ -136,14 +136,14 @@ CREATE OR REPLACE PACKAGE BODY pr.pkg_obt_prevision AS
 
             -- Resetear por iteracion: evita acumular valores de iteraciones anteriores
             -- cuando este tramite no tiene fila en PR_HIS_CALIF_X_PR_TRAMITE
-            v_pre_con   := 0;
-            v_prevision := 0;
+            v_pre_contin  := 0;
+            v_pre_directa := 0;
 
             BEGIN
                 SELECT mon_pre_contin,
                        mon_prevision + NVL(mon_prev_diferido, 0)  -- OBCHOQUE 13/06/2022 MA 373820, adiciona prevision diferida
-                  INTO v_pre_con,
-                       v_prevision
+                  INTO v_pre_contin,
+                       v_pre_directa
                   FROM PR_HIS_CALIF_X_PR_TRAMITE
                  WHERE cod_empresa = p_cod_empresa
                    AND num_tramite = reg_tramite.num_tramite
@@ -154,29 +154,29 @@ CREATE OR REPLACE PACKAGE BODY pr.pkg_obt_prevision AS
 
             IF reg_tramite.cod_moneda <> v_cod_moneda_usd THEN
                 -- Convierte prevision contingente a USD
-                Convierte_Moneda_a_Moneda(
+                Pr_Utl.Convierte_Moneda_a_Moneda(
                     p_cod_empresa,
-                    v_pre_con,
+                    v_pre_contin,
                     p_fecha,
                     TO_NUMBER(reg_tramite.cod_moneda),
-                    v_cod_moneda_usd,
+                    TO_NUMBER(v_cod_moneda_usd),
                     g_error,
-                    v_pre_con
+                    v_pre_contin
                 );
-                -- Convierte prevision normal a USD
-                Convierte_Moneda_a_Moneda(
+                -- Convierte prevision directa a USD
+                Pr_Utl.Convierte_Moneda_a_Moneda(
                     p_cod_empresa,
-                    v_prevision,
+                    v_pre_directa,
                     p_fecha,
                     TO_NUMBER(reg_tramite.cod_moneda),
-                    v_cod_moneda_usd,
+                    TO_NUMBER(v_cod_moneda_usd),
                     g_error,
-                    v_prevision
+                    v_pre_directa
                 );
             END IF;
 
-            g_tot_pre_con   := g_tot_pre_con   + NVL(v_pre_con,   0);
-            g_tot_prevision := g_tot_prevision + NVL(v_prevision, 0);
+            g_tot_pre_con   := g_tot_pre_con   + NVL(v_pre_contin,  0);
+            g_tot_prevision := g_tot_prevision + NVL(v_pre_directa, 0);
 
         END LOOP;
         CLOSE cur_tramite;

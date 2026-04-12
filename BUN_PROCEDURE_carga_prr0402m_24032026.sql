@@ -3,7 +3,8 @@ create or replace procedure pr.carga_prr0402m (
    p_fecha_hoy   in date,
    p_error       out varchar2
 ) is
--- mocastro - FSN-2026-03-24 - PR_ANTEC_CRED_GTT: Procedimiento wrapper para carga multi-empresa sin commits intermedios
+-- mocastro 25/03/2026 FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11
+-- Procedimiento wrapper para carga multi-empresa sin commits intermedios
 -- Fecha de creacion : 24/03/2026
 -- Objetivo          : Procedimiento wrapper que carga la GTT PR_ANTEC_CRED_GTT
 --                     con informacion crediticia de un cliente para multiples empresas.
