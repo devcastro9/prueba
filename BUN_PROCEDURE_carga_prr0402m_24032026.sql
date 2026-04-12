@@ -22,7 +22,7 @@ BEGIN
    p_error := null;
    v_ant_cred := pa.PARAMETRO_GENERAL('PR', 'ANTECEDENTES_CRED');
    
-   DELETE FROM pr.PR_ANTEC_CRED_GTT;
+   DELETE FROM pr.PR_ANTEC_CRED_GTT WHERE 1 = 1;
 
    for reg in (
       select e.cod_empresa
