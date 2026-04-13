@@ -241,7 +241,7 @@ mon_saldo saldo_act, monto_desembolsado monto_credito, des_moneda, des_estado, d
 Select NO_OPERACION no_credito, NUM_TRAMITE, FEC_INICIO fec_primer_desembolso, FEC_VENCIMIENTO f_vencimiento, SALDO_CONTINGENTE mon_utilizar, FEC_PROX_REVISION f_paso_castigo,
 SALDO_DIRECTO mon_saldo, MONTO_DESEMBOLSADO, DES_MONEDA, DES_ESTADO, DES_INSTRUMENTO des_tip_credito, DES_PRODUCTO
   From   PR.PR_ANTEC_CRED_GTT
-  Where  TIPO_REGISTRO = 'LIN']]>
+  Where COD_EMPRESA = :pg_cod_empresa and TIPO_REGISTRO = 'LIN']]>
       </select>
       <displayInfo x="2.09375" y="0.22925" width="0.69995" height="0.19995"/>
       <group name="G_lineas">
@@ -384,7 +384,7 @@ Select NO_OPERACION no_credito2, NUM_TRAMITE num_tramite2, FEC_INICIO fec_primer
 SALDO_DIRECTO saldo_dir2, MONTO_DESEMBOLSADO monto_credito2, DES_MONEDA des_moneda2, DES_ESTADO des_estado2, DES_INSTRUMENTO des_operacion2, DES_PRODUCTO des_producto2, NUM_TRAMITE_PADRE numero_reprogramacion,
 FEC_VTO_PROX_CUOTA f_cuota
   From   PR.PR_ANTEC_CRED_GTT
-  Where  TIPO_REGISTRO = 'BL'
+  Where COD_EMPRESA = :pg_cod_empresa and TIPO_REGISTRO = 'BL'
 order by fec_primer_desembolso
 
 ]]>
@@ -516,7 +516,7 @@ Select NO_OPERACION no_credito3, NUM_TRAMITE num_tramite3, FEC_INICIO fec_primer
 SALDO_DIRECTO saldo_dir3, MONTO_DESEMBOLSADO monto_credito3, DES_MONEDA des_moneda3, DES_ESTADO des_estado3, DES_INSTRUMENTO des_operacion3, DES_PRODUCTO des_producto3,
 FEC_VTO_PROX_CUOTA f_cuota_fl
   From   PR.PR_ANTEC_CRED_GTT
-  Where  TIPO_REGISTRO = 'FL'
+  Where COD_EMPRESA = :pg_cod_empresa and TIPO_REGISTRO = 'FL'
 order by fec_primer_desembolso]]>
       </select>
       <displayInfo x="6.12500" y="0.13550" width="1.35413" height="0.30200"/>
@@ -635,7 +635,7 @@ order by f_apertura4
 Select NO_OPERACION no_credito4, NUM_TRAMITE num_tramite4, FEC_INICIO fec_primer_desembolso, FEC_VENCIMIENTO f_vencimiento4, SALDO_CONTINGENTE saldo_cont4,
 SALDO_DIRECTO saldo_dir4, MONTO_DESEMBOLSADO monto_credito4, DES_MONEDA des_moneda4, DES_ESTADO des_estado4, NOM_CLIENTE des_operacion4, DES_PRODUCTO des_producto4, 'x'
   From   PR.PR_ANTEC_CRED_GTT
-  Where  TIPO_REGISTRO = 'IND'
+  Where COD_EMPRESA = :pg_cod_empresa and TIPO_REGISTRO = 'IND'
 order by fec_primer_desembolso]]>
       </select>
       <displayInfo x="8.15625" y="0.10413" width="1.22913" height="0.29175"/>
