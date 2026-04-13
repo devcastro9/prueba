@@ -230,11 +230,18 @@ from dual;]]>
     </dataSource>
     <dataSource name="Q_lineas">
       <select>
-      <![CDATA[Select no_credito, num_tramite, fec_primer_desembolso f_apertura, f_vencimiento, mon_utilizar saldo_disp, f_paso_castigo, 
+      <![CDATA[/* -- mocastro 25/03/2026 FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11 Query original comentada por cambio de Pr_operaciones_tmp a PR_ANTEC_CRED_GTT
+Select no_credito, num_tramite, fec_primer_desembolso f_apertura, f_vencimiento, mon_utilizar saldo_disp, f_paso_castigo,
 mon_saldo saldo_act, monto_desembolsado monto_credito, des_moneda, des_estado, des_tip_credito des_operacion, des_producto
   From   Pr_operaciones_tmp
   Where  sesion = :p_sesion
-        and cod_sucursal = 100]]>
+        and cod_sucursal = 100
+*/
+-- mocastro 25/03/2026 FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11 Nueva query usando PR_ANTEC_CRED_GTT (sesion eliminada por GTT, cod_sucursal=100 -> TIPO_REGISTRO='LIN')
+Select NO_OPERACION no_credito, NUM_TRAMITE, FEC_INICIO fec_primer_desembolso, FEC_VENCIMIENTO f_vencimiento, SALDO_CONTINGENTE mon_utilizar, FEC_PROX_REVISION f_paso_castigo,
+SALDO_DIRECTO mon_saldo, MONTO_DESEMBOLSADO, DES_MONEDA, DES_ESTADO, DES_INSTRUMENTO des_tip_credito, DES_PRODUCTO
+  From   PR.PR_ANTEC_CRED_GTT
+  Where  TIPO_REGISTRO = 'LIN']]>
       </select>
       <displayInfo x="2.09375" y="0.22925" width="0.69995" height="0.19995"/>
       <group name="G_lineas">
@@ -363,6 +370,7 @@ mon_saldo saldo_act, monto_desembolsado monto_credito, des_moneda, des_estado, d
     <dataSource name="Q_op_bl">
       <select>
       <![CDATA[
+/* -- mocastro 25/03/2026 FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11 Query original comentada por cambio de Pr_operaciones_tmp a PR_ANTEC_CRED_GTT
 Select cod_persona no_credito2, num_tramite num_tramite2, fec_primer_desembolso f_apertura2, f_vencimiento f_vencimiento2, mon_utilizar saldo_cont2,
 mon_saldo saldo_dir2, monto_desembolsado monto_credito2, des_moneda des_moneda2, des_estado des_estado2, des_tip_credito des_operacion2, des_producto des_producto2, numero_reprogramacion,
 f_ultimo_desembolso f_cuota
@@ -370,6 +378,14 @@ f_ultimo_desembolso f_cuota
   Where  sesion = :p_sesion
         and cod_sucursal = 200
 order by f_apertura2
+*/
+-- mocastro 25/03/2026 FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11 Nueva query usando PR_ANTEC_CRED_GTT (sesion eliminada por GTT, cod_sucursal=200 -> TIPO_REGISTRO='BL')
+Select NO_OPERACION no_credito2, NUM_TRAMITE num_tramite2, FEC_INICIO fec_primer_desembolso, FEC_VENCIMIENTO f_vencimiento2, SALDO_CONTINGENTE saldo_cont2,
+SALDO_DIRECTO saldo_dir2, MONTO_DESEMBOLSADO monto_credito2, DES_MONEDA des_moneda2, DES_ESTADO des_estado2, DES_INSTRUMENTO des_operacion2, DES_PRODUCTO des_producto2, NUM_TRAMITE_PADRE numero_reprogramacion,
+FEC_VTO_PROX_CUOTA f_cuota
+  From   PR.PR_ANTEC_CRED_GTT
+  Where  TIPO_REGISTRO = 'BL'
+order by fec_primer_desembolso
 
 ]]>
       </select>
@@ -380,7 +396,7 @@ order by f_apertura2
         <dataItem name="num_tramite2" oracleDatatype="number" columnOrder="34"
          width="22" defaultWidth="120000" defaultHeight="10000"
          columnFlags="1" defaultLabel="Num Tramite1">
-          <dataDescriptor expression="Pr_operaciones_tmp.num_tramite"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.NUM_TRAMITE"
            descriptiveExpression="NUM_TRAMITE2" order="2"
            oracleDatatype="number" width="22" precision="10"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -388,7 +404,7 @@ order by f_apertura2
         <dataItem name="no_credito2" datatype="vchar2" columnOrder="51"
          width="15" defaultWidth="90000" defaultHeight="10000" columnFlags="0"
          defaultLabel="No Credito2" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.cod_persona"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.NO_OPERACION"
            descriptiveExpression="NO_CREDITO2" order="1" width="15"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
@@ -396,7 +412,7 @@ order by f_apertura2
          columnOrder="52" width="9" defaultWidth="90000" defaultHeight="10000"
          columnFlags="0" defaultLabel="F Apertura2" breakOrder="none">
           <dataDescriptor
-           expression="Pr_operaciones_tmp.fec_primer_desembolso"
+           expression="PR_ANTEC_CRED_GTT.FEC_INICIO"
            descriptiveExpression="F_APERTURA2" order="3" oracleDatatype="date"
            width="9"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -404,7 +420,7 @@ order by f_apertura2
         <dataItem name="f_vencimiento2" datatype="date" oracleDatatype="date"
          columnOrder="53" width="9" defaultWidth="90000" defaultHeight="10000"
          columnFlags="0" defaultLabel="F Vencimiento2" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.f_vencimiento"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.FEC_VENCIMIENTO"
            descriptiveExpression="F_VENCIMIENTO2" order="4"
            oracleDatatype="date" width="9"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -412,7 +428,7 @@ order by f_apertura2
         <dataItem name="saldo_cont2" oracleDatatype="number" columnOrder="54"
          width="22" defaultWidth="90000" defaultHeight="10000" columnFlags="0"
          defaultLabel="Saldo Disp2" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.mon_utilizar"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.SALDO_CONTINGENTE"
            descriptiveExpression="SALDO_CONT2" order="5"
            oracleDatatype="number" width="22" scale="2" precision="16"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -420,7 +436,7 @@ order by f_apertura2
         <dataItem name="saldo_dir2" oracleDatatype="number" columnOrder="55"
          width="22" defaultWidth="90000" defaultHeight="10000" columnFlags="0"
          defaultLabel="Saldo Act2" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.mon_saldo"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.SALDO_DIRECTO"
            descriptiveExpression="SALDO_DIR2" order="6"
            oracleDatatype="number" width="22" scale="2" precision="16"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -429,7 +445,7 @@ order by f_apertura2
          columnOrder="56" width="22" defaultWidth="90000"
          defaultHeight="10000" columnFlags="0" defaultLabel="Monto Credito2"
          breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.monto_desembolsado"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.MONTO_DESEMBOLSADO"
            descriptiveExpression="MONTO_CREDITO2" order="7"
            oracleDatatype="number" width="22" scale="2" precision="16"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -437,28 +453,28 @@ order by f_apertura2
         <dataItem name="des_moneda2" datatype="vchar2" columnOrder="57"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="0" defaultLabel="Des Moneda2" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_moneda"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_MONEDA"
            descriptiveExpression="DES_MONEDA2" order="8" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="des_estado2" datatype="vchar2" columnOrder="58"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="0" defaultLabel="Des Estado2" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_estado"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_ESTADO"
            descriptiveExpression="DES_ESTADO2" order="9" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="des_operacion2" datatype="vchar2" columnOrder="59"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="0" defaultLabel="Des Operacion2" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_tip_credito"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_INSTRUMENTO"
            descriptiveExpression="DES_OPERACION2" order="10" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="des_producto2" datatype="vchar2" columnOrder="60"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="0" defaultLabel="Des Producto2" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_producto"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_PRODUCTO"
            descriptiveExpression="DES_PRODUCTO2" order="11" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
@@ -467,7 +483,7 @@ order by f_apertura2
          defaultHeight="10000" columnFlags="0"
          defaultLabel="Numero Reprogramacion" breakOrder="none">
           <dataDescriptor
-           expression="Pr_operaciones_tmp.numero_reprogramacion"
+           expression="PR_ANTEC_CRED_GTT.NUM_TRAMITE_PADRE"
            descriptiveExpression="NUMERO_REPROGRAMACION" order="12"
            oracleDatatype="number" width="22" precision="10"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -475,7 +491,7 @@ order by f_apertura2
         <dataItem name="f_cuota" datatype="date" oracleDatatype="date"
          columnOrder="86" width="9" defaultWidth="90000" defaultHeight="10000"
          columnFlags="0" defaultLabel="F Cuota" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.f_ultimo_desembolso"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.FEC_VTO_PROX_CUOTA"
            descriptiveExpression="F_CUOTA" order="13" oracleDatatype="date"
            width="9"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -486,13 +502,22 @@ order by f_apertura2
     </dataSource>
     <dataSource name="Q_op_fl">
       <select>
-      <![CDATA[Select cod_persona no_credito3, num_tramite num_tramite3, fec_primer_desembolso f_apertura3, f_vencimiento f_vencimiento3, mon_utilizar saldo_cont3,
+      <![CDATA[/* -- mocastro 25/03/2026 FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11 Query original comentada por cambio de Pr_operaciones_tmp a PR_ANTEC_CRED_GTT
+Select cod_persona no_credito3, num_tramite num_tramite3, fec_primer_desembolso f_apertura3, f_vencimiento f_vencimiento3, mon_utilizar saldo_cont3,
 mon_saldo saldo_dir3, monto_desembolsado monto_credito3, des_moneda des_moneda3, des_estado des_estado3, des_tip_credito des_operacion3, des_producto des_producto3,
 f_ultimo_desembolso f_cuota_fl
   From   Pr_operaciones_tmp
   Where  sesion = :p_sesion
         and cod_sucursal = 300
-order by f_apertura3]]>
+order by f_apertura3
+*/
+-- mocastro 25/03/2026 FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11 Nueva query usando PR_ANTEC_CRED_GTT (sesion eliminada por GTT, cod_sucursal=300 -> TIPO_REGISTRO='FL')
+Select NO_OPERACION no_credito3, NUM_TRAMITE num_tramite3, FEC_INICIO fec_primer_desembolso, FEC_VENCIMIENTO f_vencimiento3, SALDO_CONTINGENTE saldo_cont3,
+SALDO_DIRECTO saldo_dir3, MONTO_DESEMBOLSADO monto_credito3, DES_MONEDA des_moneda3, DES_ESTADO des_estado3, DES_INSTRUMENTO des_operacion3, DES_PRODUCTO des_producto3,
+FEC_VTO_PROX_CUOTA f_cuota_fl
+  From   PR.PR_ANTEC_CRED_GTT
+  Where  TIPO_REGISTRO = 'FL'
+order by fec_primer_desembolso]]>
       </select>
       <displayInfo x="6.12500" y="0.13550" width="1.35413" height="0.30200"/>
       <group name="G_tramites_fl">
@@ -501,7 +526,7 @@ order by f_apertura3]]>
         <dataItem name="num_tramite3" oracleDatatype="number" columnOrder="35"
          width="22" defaultWidth="120000" defaultHeight="10000"
          columnFlags="1" defaultLabel="Num Tramite2">
-          <dataDescriptor expression="Pr_operaciones_tmp.num_tramite"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.NUM_TRAMITE"
            descriptiveExpression="NUM_TRAMITE3" order="2"
            oracleDatatype="number" width="22" precision="10"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -509,7 +534,7 @@ order by f_apertura3]]>
         <dataItem name="no_credito3" datatype="vchar2" columnOrder="61"
          width="15" defaultWidth="90000" defaultHeight="10000" columnFlags="0"
          defaultLabel="No Credito3" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.cod_persona"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.NO_OPERACION"
            descriptiveExpression="NO_CREDITO3" order="1" width="15"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
@@ -517,7 +542,7 @@ order by f_apertura3]]>
          columnOrder="62" width="9" defaultWidth="90000" defaultHeight="10000"
          columnFlags="0" defaultLabel="F Apertura3" breakOrder="none">
           <dataDescriptor
-           expression="Pr_operaciones_tmp.fec_primer_desembolso"
+           expression="PR_ANTEC_CRED_GTT.FEC_INICIO"
            descriptiveExpression="F_APERTURA3" order="3" oracleDatatype="date"
            width="9"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -525,7 +550,7 @@ order by f_apertura3]]>
         <dataItem name="f_vencimiento3" datatype="date" oracleDatatype="date"
          columnOrder="63" width="9" defaultWidth="90000" defaultHeight="10000"
          columnFlags="0" defaultLabel="F Vencimiento3" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.f_vencimiento"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.FEC_VENCIMIENTO"
            descriptiveExpression="F_VENCIMIENTO3" order="4"
            oracleDatatype="date" width="9"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -533,7 +558,7 @@ order by f_apertura3]]>
         <dataItem name="saldo_cont3" oracleDatatype="number" columnOrder="64"
          width="22" defaultWidth="90000" defaultHeight="10000" columnFlags="0"
          defaultLabel="Saldo Disp3" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.mon_utilizar"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.SALDO_CONTINGENTE"
            descriptiveExpression="SALDO_CONT3" order="5"
            oracleDatatype="number" width="22" scale="2" precision="16"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -541,7 +566,7 @@ order by f_apertura3]]>
         <dataItem name="saldo_dir3" oracleDatatype="number" columnOrder="65"
          width="22" defaultWidth="90000" defaultHeight="10000" columnFlags="0"
          defaultLabel="Saldo Act3" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.mon_saldo"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.SALDO_DIRECTO"
            descriptiveExpression="SALDO_DIR3" order="6"
            oracleDatatype="number" width="22" scale="2" precision="16"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -550,7 +575,7 @@ order by f_apertura3]]>
          columnOrder="66" width="22" defaultWidth="90000"
          defaultHeight="10000" columnFlags="0" defaultLabel="Monto Credito3"
          breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.monto_desembolsado"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.MONTO_DESEMBOLSADO"
            descriptiveExpression="MONTO_CREDITO3" order="7"
            oracleDatatype="number" width="22" scale="2" precision="16"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -558,35 +583,35 @@ order by f_apertura3]]>
         <dataItem name="des_moneda3" datatype="vchar2" columnOrder="67"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="0" defaultLabel="Des Moneda3" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_moneda"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_MONEDA"
            descriptiveExpression="DES_MONEDA3" order="8" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="des_estado3" datatype="vchar2" columnOrder="68"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="0" defaultLabel="Des Estado3" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_estado"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_ESTADO"
            descriptiveExpression="DES_ESTADO3" order="9" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="des_operacion3" datatype="vchar2" columnOrder="69"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="0" defaultLabel="Des Operacion3" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_tip_credito"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_INSTRUMENTO"
            descriptiveExpression="DES_OPERACION3" order="10" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="des_producto3" datatype="vchar2" columnOrder="70"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="0" defaultLabel="Des Producto3" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_producto"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_PRODUCTO"
            descriptiveExpression="DES_PRODUCTO3" order="11" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="f_cuota_fl" datatype="date" oracleDatatype="date"
          columnOrder="87" width="9" defaultWidth="90000" defaultHeight="10000"
          columnFlags="0" defaultLabel="F Cuota1" breakOrder="none">
-          <dataDescriptor expression="Pr_operaciones_tmp.f_ultimo_desembolso"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.FEC_VTO_PROX_CUOTA"
            descriptiveExpression="F_CUOTA_FL" order="12" oracleDatatype="date"
            width="9"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -598,12 +623,20 @@ order by f_apertura3]]>
     <dataSource name="Q_op_ind">
       <select>
       <![CDATA[
+/* -- mocastro 25/03/2026 FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11 Query original comentada por cambio de Pr_operaciones_tmp a PR_ANTEC_CRED_GTT
 Select cod_persona no_credito4, num_tramite num_tramite4, fec_primer_desembolso f_apertura4, f_vencimiento f_vencimiento4, mon_utilizar saldo_cont4,
 mon_saldo saldo_dir4, monto_desembolsado monto_credito4, des_moneda des_moneda4, des_estado des_estado4, des_tip_credito des_operacion4, des_producto des_producto4, 'x'
   From   Pr_operaciones_tmp
   Where  sesion = :p_sesion
         and cod_sucursal = 400
-order by f_apertura4]]>
+order by f_apertura4
+*/
+-- mocastro 25/03/2026 FSN1852 Unificacion de operaciones de creditos e1 e5 e10 e11 Nueva query usando PR_ANTEC_CRED_GTT (sesion eliminada por GTT, cod_sucursal=400 -> TIPO_REGISTRO='IND')
+Select NO_OPERACION no_credito4, NUM_TRAMITE num_tramite4, FEC_INICIO fec_primer_desembolso, FEC_VENCIMIENTO f_vencimiento4, SALDO_CONTINGENTE saldo_cont4,
+SALDO_DIRECTO saldo_dir4, MONTO_DESEMBOLSADO monto_credito4, DES_MONEDA des_moneda4, DES_ESTADO des_estado4, NOM_CLIENTE des_operacion4, DES_PRODUCTO des_producto4, 'x'
+  From   PR.PR_ANTEC_CRED_GTT
+  Where  TIPO_REGISTRO = 'IND'
+order by fec_primer_desembolso]]>
       </select>
       <displayInfo x="8.15625" y="0.10413" width="1.22913" height="0.29175"/>
       <group name="G_indirecta">
@@ -612,7 +645,7 @@ order by f_apertura4]]>
         <dataItem name="num_tramite4" oracleDatatype="number" columnOrder="37"
          width="22" defaultWidth="120000" defaultHeight="10000"
          columnFlags="1" defaultLabel="Num Tramite3">
-          <dataDescriptor expression="Pr_operaciones_tmp.num_tramite"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.NUM_TRAMITE"
            descriptiveExpression="NUM_TRAMITE4" order="2"
            oracleDatatype="number" width="22" precision="10"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -620,7 +653,7 @@ order by f_apertura4]]>
         <dataItem name="no_credito4" datatype="vchar2" columnOrder="72"
          width="15" defaultWidth="90000" defaultHeight="10000" columnFlags="1"
          defaultLabel="No Credito4">
-          <dataDescriptor expression="Pr_operaciones_tmp.cod_persona"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.NO_OPERACION"
            descriptiveExpression="NO_CREDITO4" order="1" width="15"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
@@ -628,7 +661,7 @@ order by f_apertura4]]>
          columnOrder="73" width="9" defaultWidth="90000" defaultHeight="10000"
          columnFlags="1" defaultLabel="F Apertura4">
           <dataDescriptor
-           expression="Pr_operaciones_tmp.fec_primer_desembolso"
+           expression="PR_ANTEC_CRED_GTT.FEC_INICIO"
            descriptiveExpression="F_APERTURA4" order="3" oracleDatatype="date"
            width="9"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -636,7 +669,7 @@ order by f_apertura4]]>
         <dataItem name="f_vencimiento4" datatype="date" oracleDatatype="date"
          columnOrder="74" width="9" defaultWidth="90000" defaultHeight="10000"
          columnFlags="1" defaultLabel="F Vencimiento4">
-          <dataDescriptor expression="Pr_operaciones_tmp.f_vencimiento"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.FEC_VENCIMIENTO"
            descriptiveExpression="F_VENCIMIENTO4" order="4"
            oracleDatatype="date" width="9"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -644,7 +677,7 @@ order by f_apertura4]]>
         <dataItem name="saldo_cont4" oracleDatatype="number" columnOrder="75"
          width="22" defaultWidth="90000" defaultHeight="10000" columnFlags="1"
          defaultLabel="Saldo Disp4">
-          <dataDescriptor expression="Pr_operaciones_tmp.mon_utilizar"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.SALDO_CONTINGENTE"
            descriptiveExpression="SALDO_CONT4" order="5"
            oracleDatatype="number" width="22" scale="2" precision="16"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -652,7 +685,7 @@ order by f_apertura4]]>
         <dataItem name="saldo_dir4" oracleDatatype="number" columnOrder="76"
          width="22" defaultWidth="90000" defaultHeight="10000" columnFlags="1"
          defaultLabel="Saldo Act4">
-          <dataDescriptor expression="Pr_operaciones_tmp.mon_saldo"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.SALDO_DIRECTO"
            descriptiveExpression="SALDO_DIR4" order="6"
            oracleDatatype="number" width="22" scale="2" precision="16"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -660,7 +693,7 @@ order by f_apertura4]]>
         <dataItem name="monto_credito4" oracleDatatype="number"
          columnOrder="77" width="22" defaultWidth="90000"
          defaultHeight="10000" columnFlags="1" defaultLabel="Monto Credito4">
-          <dataDescriptor expression="Pr_operaciones_tmp.monto_desembolsado"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.MONTO_DESEMBOLSADO"
            descriptiveExpression="MONTO_CREDITO4" order="7"
            oracleDatatype="number" width="22" scale="2" precision="16"/>
           <dataItemPrivate adtName="" schemaName=""/>
@@ -668,28 +701,28 @@ order by f_apertura4]]>
         <dataItem name="des_moneda4" datatype="vchar2" columnOrder="78"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="1" defaultLabel="Des Moneda4">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_moneda"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_MONEDA"
            descriptiveExpression="DES_MONEDA4" order="8" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="des_estado4" datatype="vchar2" columnOrder="79"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="1" defaultLabel="Des Estado4">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_estado"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_ESTADO"
            descriptiveExpression="DES_ESTADO4" order="9" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="des_operacion4" datatype="vchar2" columnOrder="80"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="1" defaultLabel="Des Operacion4">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_tip_credito"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_INSTRUMENTO"
            descriptiveExpression="DES_OPERACION4" order="10" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
         <dataItem name="des_producto4" datatype="vchar2" columnOrder="81"
          width="60" defaultWidth="100000" defaultHeight="10000"
          columnFlags="1" defaultLabel="Des Producto4">
-          <dataDescriptor expression="Pr_operaciones_tmp.des_producto"
+          <dataDescriptor expression="PR_ANTEC_CRED_GTT.DES_PRODUCTO"
            descriptiveExpression="DES_PRODUCTO4" order="11" width="60"/>
           <dataItemPrivate adtName="" schemaName=""/>
         </dataItem>
@@ -1236,7 +1269,7 @@ order by f_apertura4]]>
             <textSegment>
               <font face="Courier New" size="8" bold="yes"/>
               <string>
-              <![CDATA[Trámite :]]>
+              <![CDATA[Trï¿½mite :]]>
               </string>
             </textSegment>
           </text>
@@ -1249,7 +1282,7 @@ order by f_apertura4]]>
             <textSegment>
               <font face="Courier New" size="8" bold="yes"/>
               <string>
-              <![CDATA[Próx. Rev.:]]>
+              <![CDATA[Prï¿½x. Rev.:]]>
               </string>
             </textSegment>
           </text>
@@ -2003,7 +2036,7 @@ order by f_apertura4]]>
             <textSegment>
               <font face="Courier New" size="8" bold="yes"/>
               <string>
-              <![CDATA[Dirección:]]>
+              <![CDATA[Direcciï¿½n:]]>
               </string>
             </textSegment>
           </text>
@@ -2081,7 +2114,7 @@ order by f_apertura4]]>
             <textSegment>
               <font face="Courier New" size="8" bold="yes"/>
               <string>
-              <![CDATA[ (Expresado en Dólares)(Tipo de cambio: ]]>
+              <![CDATA[ (Expresado en Dï¿½lares)(Tipo de cambio: ]]>
               </string>
             </textSegment>
           </text>
@@ -2095,7 +2128,7 @@ order by f_apertura4]]>
               <textSegment>
                 <font face="Courier New" size="8" bold="yes"/>
                 <string>
-                <![CDATA[Calificación:]]>
+                <![CDATA[Calificaciï¿½n:]]>
                 </string>
               </textSegment>
             </text>
@@ -2142,7 +2175,7 @@ order by f_apertura4]]>
             <textSegment>
               <font face="Courier New" size="8" bold="yes"/>
               <string>
-              <![CDATA[Teléfono :]]>
+              <![CDATA[Telï¿½fono :]]>
               </string>
             </textSegment>
           </text>
@@ -2876,7 +2909,7 @@ begin
             	       and cod_persona = :p_cod_cliente;
 				        exception
 				   	     when no_data_found then --vespejo 19/08/2010 se aumento el exception
-										:cp_direccion := 'Sin dirección'; --
+										:cp_direccion := 'Sin direcciï¿½n'; --
             	 end;
             end;      	
    end;
@@ -2889,7 +2922,7 @@ begin
          and cod_persona   = :p_cod_cliente;
       exception
    	     when no_data_found then
-   	        :cp_direccion := 'Sin dirección';
+   	        :cp_direccion := 'Sin direcciï¿½n';
    	     when too_many_rows then
    	        srw.message (0,'Muchas Direcciones');
    end;
