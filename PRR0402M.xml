@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="WINDOWS-1252" ?>
-<report name="PRR0402M_backup" DTDVersion="9.0.2.0.10"
+<report name="PRR0402M" DTDVersion="9.0.2.0.10"
  beforeReportTrigger="beforereport">
-  <xmlSettings xmlTag="PRR0402M_BACKUP" xmlPrologType="text">
+  <xmlSettings xmlTag="PRR0402M" xmlPrologType="text">
   <![CDATA[<?xml version="1.0" encoding="&Encoding"?>]]>
   </xmlSettings>
   <reportHtmlEscapes>
@@ -743,19 +743,19 @@ ORDER BY FEC_INICIO;]]>
      breakOrder="none">
       <displayInfo x="0.42712" y="4.04163" width="1.28125" height="0.21875"/>
     </formula>
-    <link name="L_1" parentGroup="G_EMPRESA" parentColumn="cod_empresa"
+    <link parentGroup="G_EMPRESA" parentColumn="cod_empresa"
      childQuery="Q_Linea" childColumn="COD_EMPRESA_LIN" condition="eq"
      sqlClause="where"/>
-    <link name="L_2" parentGroup="G_LINEAS" parentColumn="COD_EMPRESA_LIN"
+    <link parentGroup="G_LINEAS" parentColumn="COD_EMPRESA_LIN"
      childQuery="Q_OP_BL" childColumn="COD_EMPRESA_BL" condition="eq"
      sqlClause="where"/>
-    <link name="L_3" parentGroup="G_LINEAS" parentColumn="NUM_TRAMITE_LIN"
+    <link parentGroup="G_LINEAS" parentColumn="NUM_TRAMITE_LIN"
      childQuery="Q_OP_BL" childColumn="NUM_TRAMITE_PADRE_BL" condition="eq"
      sqlClause="where"/>
-    <link name="L_4" parentGroup="G_EMPRESA" parentColumn="cod_empresa"
+    <link parentGroup="G_EMPRESA" parentColumn="cod_empresa"
      childQuery="Q_OP_FL" childColumn="COD_EMPRESA_FL" condition="eq"
      sqlClause="where"/>
-    <link name="L_5" parentGroup="G_EMPRESA" parentColumn="cod_empresa"
+    <link parentGroup="G_EMPRESA" parentColumn="cod_empresa"
      childQuery="Q_OP_IND" childColumn="COD_EMPRESA_IND" condition="eq"
      sqlClause="where"/>
   </data>
@@ -1033,12 +1033,12 @@ ORDER BY FEC_INICIO;]]>
             </field>
             <text name="B_L_SDirLbl" minWidowLines="1">
               <textSettings spacing="0"/>
-              <geometryInfo x="5.05005" y="1.23999" width="1.00000"
+              <geometryInfo x="4.75000" y="1.23999" width="1.30005"
                height="0.12500"/>
               <textSegment>
                 <font face="Courier New" size="8" bold="yes"/>
                 <string>
-                <![CDATA[Saldo Directo:]]>
+                <![CDATA[Saldo Utilizado:]]>
                 </string>
               </textSegment>
             </text>
@@ -1056,7 +1056,7 @@ ORDER BY FEC_INICIO;]]>
               <textSegment>
                 <font face="Courier New" size="8" bold="yes"/>
                 <string>
-                <![CDATA[Saldo Conting.:]]>
+                <![CDATA[Saldo Disp:]]>
                 </string>
               </textSegment>
             </text>
@@ -1986,8 +1986,8 @@ ORDER BY FEC_INICIO;]]>
             </string>
           </textSegment>
         </text>
-        <field name="F_1" minWidowLines="1" spacing="single" alignment="start"
-          >
+        <field name="F_NUM_ID" source="CF_NUM_ID" minWidowLines="1"
+         spacing="single" alignment="start">
           <font face="Courier New" size="8"/>
           <geometryInfo x="9.50000" y="1.00000" width="1.25000"
            height="0.25000"/>

@@ -183,7 +183,7 @@ from dual;]]>
       </select>
       <displayInfo x="0.28125" y="0.30212" width="0.70837" height="0.28320"/>
       <group name="G_General">
-        <displayInfo x="0.08130" y="1.08533" width="1.18958" height="2.21289"
+        <displayInfo x="0.08130" y="1.08533" width="1.18958" height="2.31055"
         />
         <dataItem name="sysdate" datatype="date" oracleDatatype="date"
          columnOrder="18" width="9" defaultWidth="90000" defaultHeight="10000"
@@ -238,7 +238,7 @@ mon_saldo saldo_act, monto_desembolsado monto_credito, des_moneda, des_estado, d
       </select>
       <displayInfo x="2.09375" y="0.22925" width="0.69995" height="0.19995"/>
       <group name="G_lineas">
-        <displayInfo x="1.52917" y="0.83337" width="1.83533" height="2.79883"
+        <displayInfo x="1.52917" y="0.83337" width="1.83533" height="2.82324"
         />
         <dataItem name="f_paso_castigo" datatype="date" oracleDatatype="date"
          columnOrder="97" width="9" defaultWidth="90000" defaultHeight="10000"
@@ -375,7 +375,7 @@ order by f_apertura2
       </select>
       <displayInfo x="4.01245" y="0.09387" width="1.56250" height="0.36450"/>
       <group name="G_tramites_bl">
-        <displayInfo x="3.91675" y="0.74194" width="1.76038" height="2.40820"
+        <displayInfo x="3.91675" y="0.74194" width="1.76038" height="2.48145"
         />
         <dataItem name="num_tramite2" oracleDatatype="number" columnOrder="34"
          width="22" defaultWidth="120000" defaultHeight="10000"
@@ -496,7 +496,7 @@ order by f_apertura3]]>
       </select>
       <displayInfo x="6.12500" y="0.13550" width="1.35413" height="0.30200"/>
       <group name="G_tramites_fl">
-        <displayInfo x="6.06055" y="0.84583" width="1.64783" height="2.21289"
+        <displayInfo x="6.06055" y="0.84583" width="1.64783" height="2.31055"
         />
         <dataItem name="num_tramite3" oracleDatatype="number" columnOrder="35"
          width="22" defaultWidth="120000" defaultHeight="10000"
@@ -607,7 +607,7 @@ order by f_apertura4]]>
       </select>
       <displayInfo x="8.15625" y="0.10413" width="1.22913" height="0.29175"/>
       <group name="G_indirecta">
-        <displayInfo x="8.10217" y="0.81445" width="1.51245" height="2.21289"
+        <displayInfo x="8.10217" y="0.81445" width="1.51245" height="2.31055"
         />
         <dataItem name="num_tramite4" oracleDatatype="number" columnOrder="37"
          width="22" defaultWidth="120000" defaultHeight="10000"
@@ -704,53 +704,6 @@ order by f_apertura4]]>
        numberOfRecords="0"/>
       </group>
     </dataSource>
-    <formula name="CF_total_directo" source="cf_total_directoformula"
-     datatype="number" width="20" precision="18" scale="2" defaultWidth="0"
-     defaultHeight="0" columnFlags="16" breakOrder="none">
-      <displayInfo x="0.12500" y="3.70825" width="1.17712" height="0.19995"/>
-    </formula>
-    <formula name="CF_total_contingente" source="cf_total_contingenteformula"
-     datatype="number" width="20" precision="18" scale="2" defaultWidth="0"
-     defaultHeight="0" columnFlags="16" breakOrder="none">
-      <displayInfo x="0.12500" y="4.08337" width="1.16663" height="0.19995"/>
-    </formula>
-    <formula name="Cf_calif" source="cf_califformula" datatype="character"
-     width="3" precision="10" defaultWidth="0" defaultHeight="0"
-     columnFlags="16" breakOrder="none">
-      <displayInfo x="0.15625" y="4.32288" width="0.79993" height="0.19995"/>
-    </formula>
-    <placeholder name="CP_telefono" datatype="character" width="20"
-     precision="10" defaultWidth="0" defaultHeight="0" columnFlags="16">
-      <displayInfo x="1.29163" y="4.56262" width="0.94800" height="0.19995"/>
-    </placeholder>
-    <placeholder name="CP_direccion" datatype="character" width="160"
-     precision="10" defaultWidth="0" defaultHeight="0" columnFlags="16">
-      <displayInfo x="1.30212" y="4.32312" width="0.93750" height="0.19995"/>
-    </placeholder>
-    <formula name="CF_id_cliente" source="cf_id_clienteformula"
-     datatype="character" width="100" precision="10" defaultWidth="0"
-     defaultHeight="0" columnFlags="16" breakOrder="none">
-      <displayInfo x="1.31238" y="4.08325" width="0.91675" height="0.20837"/>
-    </formula>
-    <placeholder name="CP_caedec" datatype="character" width="152"
-     precision="150" defaultWidth="0" defaultHeight="0" columnFlags="16">
-      <displayInfo x="2.26038" y="4.32300" width="1.11462" height="0.19995"/>
-    </placeholder>
-    <summary name="CS_tot_dir_bl1" source="saldo_dir2" function="sum"
-     width="20" precision="18" scale="2" reset="report" compute="report"
-     defaultWidth="0" defaultHeight="0" columnFlags="8">
-      <displayInfo x="4.20837" y="3.58398" width="1.29163" height="0.19995"/>
-    </summary>
-    <summary name="CS_tot_cont_bl1" source="saldo_cont2" function="sum"
-     width="20" precision="18" scale="2" reset="report" compute="report"
-     defaultWidth="0" defaultHeight="0" columnFlags="8" valueIfNull="0">
-      <displayInfo x="4.20837" y="3.93811" width="1.26038" height="0.19995"/>
-    </summary>
-    <summary name="CS_tot_dir_fl" source="saldo_dir3" function="sum"
-     width="20" precision="18" scale="2" reset="report" compute="report"
-     defaultWidth="0" defaultHeight="0" columnFlags="8">
-      <displayInfo x="6.28125" y="3.28198" width="1.18750" height="0.19995"/>
-    </summary>
     <summary name="CS_tot_cont_fl" source="saldo_cont3" function="sum"
      width="20" precision="18" scale="2" reset="report" compute="report"
      defaultWidth="0" defaultHeight="0" columnFlags="8">
@@ -766,6 +719,53 @@ order by f_apertura4]]>
      defaultWidth="0" defaultHeight="0" columnFlags="8">
       <displayInfo x="8.34351" y="3.71948" width="1.10413" height="0.19995"/>
     </summary>
+    <formula name="CF_total_directo" source="cf_total_directoformula"
+     datatype="number" width="20" precision="18" scale="2" defaultWidth="0"
+     defaultHeight="0" columnFlags="16" breakOrder="none">
+      <displayInfo x="0.12500" y="3.70825" width="1.17712" height="0.19995"/>
+    </formula>
+    <formula name="CF_total_contingente" source="cf_total_contingenteformula"
+     datatype="number" width="20" precision="18" scale="2" defaultWidth="0"
+     defaultHeight="0" columnFlags="16" breakOrder="none">
+      <displayInfo x="0.12500" y="4.08337" width="1.16663" height="0.19995"/>
+    </formula>
+    <summary name="CS_tot_dir_bl1" source="saldo_dir2" function="sum"
+     width="20" precision="18" scale="2" reset="report" compute="report"
+     defaultWidth="0" defaultHeight="0" columnFlags="8">
+      <displayInfo x="4.20837" y="3.58398" width="1.29163" height="0.19995"/>
+    </summary>
+    <summary name="CS_tot_cont_bl1" source="saldo_cont2" function="sum"
+     width="20" precision="18" scale="2" reset="report" compute="report"
+     defaultWidth="0" defaultHeight="0" columnFlags="8" valueIfNull="0">
+      <displayInfo x="4.20837" y="3.93811" width="1.26038" height="0.19995"/>
+    </summary>
+    <summary name="CS_tot_dir_fl" source="saldo_dir3" function="sum"
+     width="20" precision="18" scale="2" reset="report" compute="report"
+     defaultWidth="0" defaultHeight="0" columnFlags="8">
+      <displayInfo x="6.28125" y="3.28198" width="1.18750" height="0.19995"/>
+    </summary>
+    <formula name="Cf_calif" source="cf_califformula" datatype="character"
+     width="3" precision="10" defaultWidth="0" defaultHeight="0"
+     columnFlags="16" breakOrder="none">
+      <displayInfo x="0.15625" y="4.32288" width="0.79993" height="0.19995"/>
+    </formula>
+    <formula name="CF_id_cliente" source="cf_id_clienteformula"
+     datatype="character" width="100" precision="10" defaultWidth="0"
+     defaultHeight="0" columnFlags="16" breakOrder="none">
+      <displayInfo x="1.31238" y="4.08325" width="0.91675" height="0.20837"/>
+    </formula>
+    <placeholder name="CP_direccion" datatype="character" width="160"
+     precision="10" defaultWidth="0" defaultHeight="0" columnFlags="16">
+      <displayInfo x="1.30212" y="4.32312" width="0.93750" height="0.19995"/>
+    </placeholder>
+    <placeholder name="CP_telefono" datatype="character" width="20"
+     precision="10" defaultWidth="0" defaultHeight="0" columnFlags="16">
+      <displayInfo x="1.29163" y="4.56262" width="0.94800" height="0.19995"/>
+    </placeholder>
+    <placeholder name="CP_caedec" datatype="character" width="152"
+     precision="150" defaultWidth="0" defaultHeight="0" columnFlags="16">
+      <displayInfo x="2.26038" y="4.32300" width="1.11462" height="0.19995"/>
+    </placeholder>
     <link parentGroup="G_lineas" parentColumn="num_tramite1"
      childQuery="Q_op_bl" childColumn="numero_reprogramacion" condition="eq"
      sqlClause="where"/>
