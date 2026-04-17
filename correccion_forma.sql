@@ -28,6 +28,12 @@ BEGIN
       v_idx := v_idx + 1;
     END LOOP;
 
+    -- Eliminar elemento en blanco residual que deja CLEAR_LIST
+    IF GET_LIST_ELEMENT_COUNT('BKCONTROL.LST_EMPRESA') > (v_idx - 1) THEN
+      DELETE_LIST_ELEMENT('BKCONTROL.LST_EMPRESA',
+                          GET_LIST_ELEMENT_COUNT('BKCONTROL.LST_EMPRESA'));
+    END IF;
+
     -- Seleccionar la empresa actual por defecto
     :BKCONTROL.LST_EMPRESA := NVL(v_emp_actual, NVL(:VARIABLES.CodEmpresa, :GLOBAL.CodEmpresa));
 

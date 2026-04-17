@@ -224,3 +224,16 @@ FOR reg IN (SELECT * FROM pr.PR_PREVISION_DET_GTT
     -- ... resto de columnas
     create_record;
 END LOOP;
+
+
+El problema es clásico en Oracle Forms. Cuando defines un list item en el Form Builder, este tiene un elemento inicial por defecto (normalmente con valor NULL o cadena vacía). Al hacer CLEAR_LIST se eliminan todos los elementos, pero el listbox queda vacío y luego al poblar con ADD_LIST_ELEMENT empezando en v_idx := 1, los elementos se agregan correctamente. Sin embargo, el elemento en blanco al final aparece porque el list item en diseño ya tiene un elemento estático que no se elimina completamente, o bien porque CLEAR_LIST deja un slot residual.
+
+La solución es agregar un DELETE_LIST_ELEMENT para el último elemento sobrante después del loop, o más simple: iniciar v_idx en 1 y después del loop eliminar el elemento extra si existe. Pero la forma más limpia y confiable es esta:
+
+Edit d:\Documentos\repos\prueba\correccion_forma.sql
+Added 6 lines
+Causa del problema: En Oracle Forms, CLEAR_LIST no siempre elimina todos los elementos internos del list item. Si el list item fue definido en diseño con un elemento estático (aunque sea vacío), CLEAR_LIST lo puede dejar como residuo al final de la lista. Además, dependiendo de la versión, CLEAR_LIST puede dejar un "slot" vacío.
+
+La corrección (líneas 30-34) compara la cantidad real de elementos en la lista (GET_LIST_ELEMENT_COUNT) contra los que efectivamente se agregaron (v_idx - 1). Si hay un elemento de más, lo elimina con DELETE_LIST_ELEMENT.
+
+Alternativamente, si prefieres una solución más simple sin condicional, puedes eliminar el elemento vacío que el list item trae por diseño directamente en las propiedades del item en Form Builder, asegurándote de que la lista de "List Elements" no tenga un registro con valor vacío.
